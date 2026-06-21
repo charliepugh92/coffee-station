@@ -26,6 +26,7 @@
     "graphql": "^16.14.2",
     "graphql-ruby-client": "^1.15.1",
     "pinia": "^3.0.4",
+    "qrcode": "^1.5.4",
     "vue": "^3.5.34",
     "vue-router": "^5.1.0"
   },
@@ -39,6 +40,7 @@
     "@graphql-codegen/typescript-operations": "^6.0.4",
     "@tailwindcss/vite": "^4.3.1",
     "@types/node": "^24.13.2",
+    "@types/qrcode": "^1.5.6",
     "@types/rails__actioncable": "^8.0.3",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vitest/coverage-v8": "^4.1.9",

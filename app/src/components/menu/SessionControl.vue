@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
+import QRCode from 'qrcode'
 import { apolloClient } from '@/utils/apolloClient'
 import OpenSessionDocument from '@/graphql/gql/sessions/mutations/OpenSession.graphql'
 import CloseSessionDocument from '@/graphql/gql/sessions/mutations/CloseSession.graphql'
@@ -17,6 +18,13 @@ const emit = defineEmits<{ changed: [] }>()
 const shareLink = computed(() => {
   const token = props.station.openSession?.shareToken
   return token ? `${window.location.origin}/s/${token}` : null
+})
+
+const qrDataUrl = ref('')
+watchEffect(async () => {
+  qrDataUrl.value = shareLink.value
+    ? await QRCode.toDataURL(shareLink.value, { width: 160, margin: 1 })
+    : ''
 })
 
 async function open() {
@@ -63,6 +71,12 @@ async function copyLink() {
           Copy
         </button>
       </div>
+      <img
+        v-if="qrDataUrl"
+        :src="qrDataUrl"
+        alt="Scan to order"
+        class="mx-auto mt-3 h-40 w-40"
+      >
     </template>
     <div
       v-else
