@@ -22,6 +22,8 @@ module Schemas
       description "Order mutations"
       graphql_name "OrderMutations"
 
+      field :complete_order, mutation: ::Mutations::Orders::CompleteOrder,
+        description: "Mark an order ready with a photo"
       field :create_order, mutation: ::Mutations::Orders::CreateOrder,
         description: "Place a guest order"
       field :update_order_status, mutation: ::Mutations::Orders::UpdateOrderStatus,

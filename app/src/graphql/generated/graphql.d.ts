@@ -134,6 +134,15 @@ declare module '*/UpsertPreset.graphql' {
 }
     
 
+declare module '*/CompleteOrder.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const CompleteOrder: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/CreateOrder.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;

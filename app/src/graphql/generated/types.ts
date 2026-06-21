@@ -87,6 +87,14 @@ export type UpsertPresetMutationVariables = Exact<{
 
 export type UpsertPresetMutation = { upsertPreset: { errors: Array<string>, preset: { id: string, name: string, description: string | null, position: number, imageUrl: string | null, options: Array<{ id: string, name: string }> } | null } | null };
 
+export type CompleteOrderMutationVariables = Exact<{
+  orderId: string | number;
+  file: File;
+}>;
+
+
+export type CompleteOrderMutation = { completeOrder: { errors: Array<string>, order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }> } | null } | null };
+
 export type CreateOrderMutationVariables = Exact<{
   sessionToken: string;
   attrs: Types.OrderInput;

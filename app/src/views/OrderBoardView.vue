@@ -6,6 +6,7 @@ import { apolloClient } from '@/utils/apolloClient'
 import StationBoardDocument from '@/graphql/gql/stations/queries/StationBoard.graphql'
 import OrderAddedDocument from '@/graphql/gql/orders/subscriptions/OrderAdded.graphql'
 import UpdateOrderStatusDocument from '@/graphql/gql/orders/mutations/UpdateOrderStatus.graphql'
+import CompleteOrderDocument from '@/graphql/gql/orders/mutations/CompleteOrder.graphql'
 import type {
   StationBoardQuery,
   StationBoardQueryVariables,
@@ -13,6 +14,8 @@ import type {
   OrderAddedSubscriptionVariables,
   UpdateOrderStatusMutation,
   UpdateOrderStatusMutationVariables,
+  CompleteOrderMutation,
+  CompleteOrderMutationVariables,
   OrderStatusEnum,
 } from '@/graphql/generated/types'
 
@@ -30,9 +33,10 @@ const { onResult: onOrderAdded } = useSubscription<OrderAddedSubscription, Order
 )
 onOrderAdded(() => refetch())
 
+// PENDING → start, READY → picked up are plain status bumps. IN_PROGRESS → ready
+// goes through completeOrder so a photo is captured.
 const NEXT: Record<string, { status: OrderStatusEnum; label: string } | undefined> = {
   PENDING: { status: 'IN_PROGRESS', label: 'Start' },
-  IN_PROGRESS: { status: 'READY', label: 'Mark ready' },
   READY: { status: 'PICKED_UP', label: 'Picked up' },
 }
 
@@ -42,6 +46,16 @@ async function advance(orderId: string, status: string) {
   await apolloClient.mutate<UpdateOrderStatusMutation, UpdateOrderStatusMutationVariables>({
     mutation: UpdateOrderStatusDocument,
     variables: { orderId, status: next.status },
+  })
+  refetch()
+}
+
+async function complete(orderId: string, event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  await apolloClient.mutate<CompleteOrderMutation, CompleteOrderMutationVariables>({
+    mutation: CompleteOrderDocument,
+    variables: { orderId, file },
   })
   refetch()
 }
@@ -100,8 +114,21 @@ async function advance(orderId: string, status: string) {
         </div>
         <div class="flex items-center gap-3">
           <span class="text-xs uppercase tracking-wide text-stone-400">{{ o.status.replace('_', ' ') }}</span>
+          <label
+            v-if="o.status === 'IN_PROGRESS'"
+            class="cursor-pointer rounded bg-stone-800 px-3 py-1 text-xs text-white"
+          >
+            Mark ready 📷
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              class="hidden"
+              @change="complete(o.id, $event)"
+            >
+          </label>
           <button
-            v-if="NEXT[o.status]"
+            v-else-if="NEXT[o.status]"
             class="rounded bg-stone-800 px-3 py-1 text-xs text-white"
             @click="advance(o.id, o.status)"
           >
