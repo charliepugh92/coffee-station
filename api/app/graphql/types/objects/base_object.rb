@@ -10,15 +10,20 @@ module Types
       private
 
       # Absolute URL for an Active Storage attachment, or nil if none is attached.
-      # API-only mode has no request to infer the host from, so pass it explicitly.
+      # API-only mode has no request to infer the host from, so pass it explicitly
+      # (API_HOST/API_PROTOCOL are set in production; localhost http in dev/test).
       def attachment_url(attachment)
         return nil unless attachment.attached?
 
-        Rails.application.routes.url_helpers.rails_blob_url(attachment, host: api_host)
+        Rails.application.routes.url_helpers.rails_blob_url(attachment, host: api_host, protocol: api_protocol)
       end
 
       def api_host
         ENV.fetch("API_HOST", "localhost:3000")
+      end
+
+      def api_protocol
+        ENV.fetch("API_PROTOCOL", "http")
       end
     end
   end
