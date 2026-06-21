@@ -1,0 +1,19 @@
+#import "../../fragments/CategoryFields.graphql"
+#import "../../fragments/PresetFields.graphql"
+
+query SessionByToken($token: String!) {
+  sessionByToken(token: $token) {
+    id
+    status
+    station {
+      name
+      description
+      customizationCategories {
+        ...CategoryFields
+      }
+      menuPresets {
+        ...PresetFields
+      }
+    }
+  }
+}

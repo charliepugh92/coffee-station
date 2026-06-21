@@ -11,6 +11,8 @@ module Types
       field :id, ID, null: false, description: "Unique station ID"
       field :menu_presets, [ MenuPresetType ], null: false, description: "Curated combinations, ordered"
       field :name, String, null: false, description: "Station name"
+      field :open_session, "Types::Objects::SessionType", null: true,
+        description: "The currently open session, if the station is open"
       field :slug, String, null: true, description: "Optional human-friendly identifier, unique per host"
     end
   end

@@ -125,6 +125,33 @@ declare module '*/UpsertPreset.graphql' {
 }
     
 
+declare module '*/CloseSession.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const CloseSession: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/OpenSession.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const OpenSession: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/SessionByToken.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const SessionByToken: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/CreateStation.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;

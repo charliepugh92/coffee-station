@@ -16,7 +16,7 @@ export type OptionFieldsFragment = { id: string, name: string, surchargeCents: n
 
 export type PresetFieldsFragment = { id: string, name: string, description: string | null, position: number, imageUrl: string | null, options: Array<{ id: string, name: string }> };
 
-export type StationDetailFragment = { id: string, name: string, slug: string | null, description: string | null, customizationCategories: Array<{ id: string, name: string, selectionMode: Types.SelectionModeEnum, required: boolean, position: number, options: Array<{ id: string, name: string, surchargeCents: number | null, position: number, imageUrl: string | null }> }>, menuPresets: Array<{ id: string, name: string, description: string | null, position: number, imageUrl: string | null, options: Array<{ id: string, name: string }> }> };
+export type StationDetailFragment = { id: string, name: string, slug: string | null, description: string | null, openSession: { id: string, status: Types.SessionStatusEnum, shareToken: string | null } | null, customizationCategories: Array<{ id: string, name: string, selectionMode: Types.SelectionModeEnum, required: boolean, position: number, options: Array<{ id: string, name: string, surchargeCents: number | null, position: number, imageUrl: string | null }> }>, menuPresets: Array<{ id: string, name: string, description: string | null, position: number, imageUrl: string | null, options: Array<{ id: string, name: string }> }> };
 
 export type UserFieldsFragment = { id: string, email: string, displayName: string, createdAt: string };
 
@@ -85,6 +85,27 @@ export type UpsertPresetMutationVariables = Exact<{
 
 export type UpsertPresetMutation = { upsertPreset: { errors: Array<string>, preset: { id: string, name: string, description: string | null, position: number, imageUrl: string | null, options: Array<{ id: string, name: string }> } | null } | null };
 
+export type CloseSessionMutationVariables = Exact<{
+  id: string | number;
+}>;
+
+
+export type CloseSessionMutation = { closeSession: { errors: Array<string>, session: { id: string, status: Types.SessionStatusEnum } | null } | null };
+
+export type OpenSessionMutationVariables = Exact<{
+  stationId: string | number;
+}>;
+
+
+export type OpenSessionMutation = { openSession: { errors: Array<string>, session: { id: string, status: Types.SessionStatusEnum, shareToken: string | null } | null } | null };
+
+export type SessionByTokenQueryVariables = Exact<{
+  token: string;
+}>;
+
+
+export type SessionByTokenQuery = { sessionByToken: { id: string, status: Types.SessionStatusEnum, station: { name: string, description: string | null, customizationCategories: Array<{ id: string, name: string, selectionMode: Types.SelectionModeEnum, required: boolean, position: number, options: Array<{ id: string, name: string, surchargeCents: number | null, position: number, imageUrl: string | null }> }>, menuPresets: Array<{ id: string, name: string, description: string | null, position: number, imageUrl: string | null, options: Array<{ id: string, name: string }> }> } } | null };
+
 export type CreateStationMutationVariables = Exact<{
   attrs: Types.StationAttrsInput;
 }>;
@@ -109,7 +130,7 @@ export type StationQueryVariables = Exact<{
 }>;
 
 
-export type StationQuery = { station: { id: string, name: string, slug: string | null, description: string | null, customizationCategories: Array<{ id: string, name: string, selectionMode: Types.SelectionModeEnum, required: boolean, position: number, options: Array<{ id: string, name: string, surchargeCents: number | null, position: number, imageUrl: string | null }> }>, menuPresets: Array<{ id: string, name: string, description: string | null, position: number, imageUrl: string | null, options: Array<{ id: string, name: string }> }> } | null };
+export type StationQuery = { station: { id: string, name: string, slug: string | null, description: string | null, openSession: { id: string, status: Types.SessionStatusEnum, shareToken: string | null } | null, customizationCategories: Array<{ id: string, name: string, selectionMode: Types.SelectionModeEnum, required: boolean, position: number, options: Array<{ id: string, name: string, surchargeCents: number | null, position: number, imageUrl: string | null }> }>, menuPresets: Array<{ id: string, name: string, description: string | null, position: number, imageUrl: string | null, options: Array<{ id: string, name: string }> }> } | null };
 
 export type ApiVersionQueryVariables = Exact<{ [key: string]: never; }>;
 

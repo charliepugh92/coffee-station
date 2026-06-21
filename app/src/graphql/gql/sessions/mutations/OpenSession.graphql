@@ -1,0 +1,10 @@
+mutation OpenSession($stationId: ID!) {
+  openSession(input: { stationId: $stationId }) {
+    session {
+      id
+      status
+      shareToken
+    }
+    errors
+  }
+}

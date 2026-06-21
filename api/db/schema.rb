@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_21_194600) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_21_195740) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,6 +86,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_194600) do
     t.index ["station_id"], name: "index_menu_presets_on_station_id"
   end
 
+  create_table "sessions", force: :cascade do |t|
+    t.datetime "closed_at"
+    t.datetime "created_at", null: false
+    t.datetime "opened_at"
+    t.string "share_token", null: false
+    t.bigint "station_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["share_token"], name: "index_sessions_on_share_token", unique: true
+    t.index ["station_id"], name: "idx_one_open_session_per_station", unique: true, where: "(status = 0)"
+    t.index ["station_id"], name: "index_sessions_on_station_id"
+  end
+
   create_table "stations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -119,5 +132,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_194600) do
   add_foreign_key "menu_preset_options", "customization_options"
   add_foreign_key "menu_preset_options", "menu_presets"
   add_foreign_key "menu_presets", "stations"
+  add_foreign_key "sessions", "stations"
   add_foreign_key "stations", "users"
 end

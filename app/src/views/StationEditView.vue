@@ -7,6 +7,7 @@ import StationDocument from '@/graphql/gql/stations/queries/Station.graphql'
 import type { StationQuery, StationQueryVariables, SelectionModeEnum } from '@/graphql/generated/types'
 import CategoryCard from '@/components/menu/CategoryCard.vue'
 import PresetSection from '@/components/menu/PresetSection.vue'
+import SessionControl from '@/components/menu/SessionControl.vue'
 
 const route = useRoute()
 const id = route.params.id as string
@@ -43,6 +44,12 @@ async function addCategory() {
     <h2 class="mt-2 text-lg font-semibold">
       {{ result.station.name }}
     </h2>
+
+    <SessionControl
+      class="mt-3"
+      :station="result.station"
+      @changed="refetch"
+    />
 
     <form
       class="mt-4 flex flex-wrap items-center gap-2"

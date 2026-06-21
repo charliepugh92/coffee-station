@@ -42,6 +42,11 @@ module Mutations
       MenuPreset.where(station: current_user.stations).find_by(id:) || not_found!("Preset")
     end
 
+    def find_owned_session!(id)
+      require_auth!
+      Session.where(station: current_user.stations).find_by(id:) || not_found!("Session")
+    end
+
     def not_found!(label)
       raise GraphQL::ExecutionError, "#{label} not found"
     end

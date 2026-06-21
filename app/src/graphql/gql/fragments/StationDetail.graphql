@@ -6,6 +6,11 @@ fragment StationDetail on Station {
   name
   slug
   description
+  openSession {
+    id
+    status
+    shareToken
+  }
   customizationCategories {
     ...CategoryFields
   }

@@ -35,6 +35,12 @@ const router = createRouter({
       component: () => import('@/views/StationEditView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      // Public guest ordering link — no auth.
+      path: '/s/:token',
+      name: 'guest-order',
+      component: () => import('@/views/GuestOrderView.vue'),
+    },
   ],
 })
 

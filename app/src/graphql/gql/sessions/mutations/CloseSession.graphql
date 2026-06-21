@@ -1,0 +1,9 @@
+mutation CloseSession($id: ID!) {
+  closeSession(input: { id: $id }) {
+    session {
+      id
+      status
+    }
+    errors
+  }
+}
