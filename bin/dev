@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SESSION="coffee-station"
+
+# Kill any existing session with this name
+tmux kill-session -t "$SESSION" 2>/dev/null || true
+
+# Start a new session with the API in the left pane
+tmux new-session -d -s "$SESSION" -x "$(tput cols)" -y "$(tput lines)" \
+  "cd '$ROOT/api' && bundle exec rails server -p 3000; read"
+
+# Split vertically and run the Vue dev server in the right pane
+tmux split-window -h -t "$SESSION" \
+  "source \"\${NVM_DIR:-\$HOME/.nvm}/nvm.sh\" && nvm use 22 && cd '$ROOT/app' && npm run dev; read"
+
+# Even out the split
+tmux select-layout -t "$SESSION" even-horizontal
+
+# Attach
+tmux attach -t "$SESSION"

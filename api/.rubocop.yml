@@ -1,0 +1,27 @@
+# Omakase Ruby styling for Rails
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
+plugins:
+  - rubocop-graphql
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+
+# GraphQL integration specs describe operations ("Mutation: createOrder"),
+# not classes — this is the idiomatic pattern for non-unit specs.
+RSpec/DescribeClass:
+  IgnoredMetadata:
+    type:
+      - graphql
+
+# RelayClassicMutation wraps all arguments in an auto-generated input type,
+# so mutations with ≤4 inline args are already following the extraction pattern.
+# Mutations with 5+ args use explicit Types::InputObjects classes instead.
+GraphQL/ExtractInputType:
+  MaxArguments: 4
+
+# Two fields that merely share a name prefix don't warrant a wrapper type;
+# extraction earns its keep only for larger clusters of related fields.
+GraphQL/ExtractType:
+  MaxFields: 3

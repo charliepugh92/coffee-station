@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+API="$ROOT/api"
+APP="$ROOT/app"
+NVM_INIT="${NVM_DIR:-$HOME/.nvm}/nvm.sh"
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+
+run() {
+  local name="$1" cmd="$2"
+  (eval "$cmd" >"$TMP/$name.out" 2>&1; echo $? >"$TMP/$name.exit") &
+}
+
+FE="source '$NVM_INIT' 2>/dev/null; nvm use 22 >/dev/null 2>&1; cd '$APP'"
+
+run rubocop     "cd '$API' && bundle exec rubocop"
+run rspec       "cd '$API' && bundle exec rspec"
+run brakeman    "cd '$API' && bundle exec brakeman -c config/brakeman.yml"
+run bundleaudit "cd '$API' && bundle exec bundle-audit check --update"
+run typecheck   "$FE && npm run typecheck"
+run eslint      "$FE && npm run lint"
+run vitest      "$FE && npm test"
+run npmaudit    "$FE && npm run audit"
+
+wait
+
+NAMES=(rubocop     rspec  brakeman  bundleaudit typecheck  eslint  vitest  npmaudit)
+LABELS=(RuboCop    RSpec  Brakeman  bundle-audit TypeScript ESLint  Vitest  "npm audit")
+FAILED=()
+
+for i in "${!NAMES[@]}"; do
+  name="${NAMES[$i]}"
+  label="${LABELS[$i]}"
+  code="$(cat "$TMP/$name.exit" 2>/dev/null || echo 1)"
+  if [ "$code" -eq 0 ]; then
+    printf "  PASS  %s\n" "$label"
+  else
+    printf "  FAIL  %s\n" "$label"
+    FAILED+=("$label")
+  fi
+done
+
+echo ""
+
+if [ ${#FAILED[@]} -eq 0 ]; then
+  echo "All checks passed."
+  exit 0
+fi
+
+echo "Failed: ${FAILED[*]}"
+echo ""
+
+for i in "${!NAMES[@]}"; do
+  name="${NAMES[$i]}"
+  label="${LABELS[$i]}"
+  code="$(cat "$TMP/$name.exit" 2>/dev/null || echo 1)"
+  if [ "$code" -ne 0 ]; then
+    echo "=== $label ==="
+    cat "$TMP/$name.out"
+    echo ""
+  fi
+done
+
+exit 1

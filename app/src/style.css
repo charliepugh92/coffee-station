@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/* Neutral baseline — a full visual style guide is deferred. */
+html,
+body,
+#app {
+  height: 100%;
+}
