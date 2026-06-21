@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_21_195740) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_21_200418) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,6 +86,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_195740) do
     t.index ["station_id"], name: "index_menu_presets_on_station_id"
   end
 
+  create_table "order_selections", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "customization_option_id", null: false
+    t.bigint "order_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customization_option_id"], name: "index_order_selections_on_customization_option_id"
+    t.index ["order_id", "customization_option_id"], name: "idx_order_selections_unique", unique: true
+    t.index ["order_id"], name: "index_order_selections_on_order_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.bigint "base_option_id"
+    t.datetime "created_at", null: false
+    t.string "guest_name", null: false
+    t.string "guest_token", null: false
+    t.bigint "menu_preset_id"
+    t.text "notes"
+    t.bigint "session_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["base_option_id"], name: "index_orders_on_base_option_id"
+    t.index ["guest_token"], name: "index_orders_on_guest_token", unique: true
+    t.index ["menu_preset_id"], name: "index_orders_on_menu_preset_id"
+    t.index ["session_id", "status"], name: "index_orders_on_session_id_and_status"
+    t.index ["session_id"], name: "index_orders_on_session_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "closed_at"
     t.datetime "created_at", null: false
@@ -132,6 +159,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_195740) do
   add_foreign_key "menu_preset_options", "customization_options"
   add_foreign_key "menu_preset_options", "menu_presets"
   add_foreign_key "menu_presets", "stations"
+  add_foreign_key "order_selections", "customization_options"
+  add_foreign_key "order_selections", "orders"
+  add_foreign_key "orders", "customization_options", column: "base_option_id"
+  add_foreign_key "orders", "menu_presets"
+  add_foreign_key "orders", "sessions"
   add_foreign_key "sessions", "stations"
   add_foreign_key "stations", "users"
 end

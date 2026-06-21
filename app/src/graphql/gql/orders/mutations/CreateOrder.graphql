@@ -1,0 +1,11 @@
+#import "../../fragments/OrderFields.graphql"
+
+mutation CreateOrder($sessionToken: String!, $attrs: OrderInput!) {
+  createOrder(input: { sessionToken: $sessionToken, attrs: $attrs }) {
+    order {
+      ...OrderFields
+    }
+    guestToken
+    errors
+  }
+}

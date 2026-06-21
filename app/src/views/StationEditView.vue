@@ -41,9 +41,17 @@ async function addCategory() {
     >
       ← Stations
     </RouterLink>
-    <h2 class="mt-2 text-lg font-semibold">
-      {{ result.station.name }}
-    </h2>
+    <div class="mt-2 flex items-center justify-between">
+      <h2 class="text-lg font-semibold">
+        {{ result.station.name }}
+      </h2>
+      <RouterLink
+        :to="`/stations/${id}/board`"
+        class="text-sm text-stone-500 hover:text-stone-800"
+      >
+        Order board →
+      </RouterLink>
+    </div>
 
     <SessionControl
       class="mt-3"

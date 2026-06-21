@@ -11,6 +11,7 @@ module Schemas
     implements Schemas::Users::Queries
     implements Schemas::Stations::Queries
     implements Schemas::Sessions::Queries
+    implements Schemas::Orders::Queries
 
     field :api_version, String, null: false, description: "The running API version string"
 

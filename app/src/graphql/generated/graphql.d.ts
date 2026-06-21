@@ -26,6 +26,15 @@ declare module '*/OptionFields.graphql' {
 }
     
 
+declare module '*/OrderFields.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const OrderFields: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/PresetFields.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -125,6 +134,33 @@ declare module '*/UpsertPreset.graphql' {
 }
     
 
+declare module '*/CreateOrder.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const CreateOrder: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/UpdateOrderStatus.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const UpdateOrderStatus: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/OrderByToken.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const OrderByToken: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/CloseSession.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -183,6 +219,15 @@ declare module '*/Station.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
   export const Station: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/StationBoard.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const StationBoard: DocumentNode;
 
   export default defaultDocument;
 }

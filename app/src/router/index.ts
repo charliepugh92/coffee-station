@@ -36,6 +36,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/stations/:id/board',
+      name: 'order-board',
+      component: () => import('@/views/OrderBoardView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       // Public guest ordering link — no auth.
       path: '/s/:token',
       name: 'guest-order',

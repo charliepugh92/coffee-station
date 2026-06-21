@@ -1,0 +1,22 @@
+fragment OrderFields on Order {
+  id
+  guestName
+  status
+  queuePosition
+  notes
+  completionPhotoUrl
+  createdAt
+  stationName
+  baseOption {
+    id
+    name
+  }
+  menuPreset {
+    id
+    name
+  }
+  selections {
+    id
+    name
+  }
+}

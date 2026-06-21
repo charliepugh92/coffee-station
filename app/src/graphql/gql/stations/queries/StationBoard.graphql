@@ -1,0 +1,15 @@
+#import "../../fragments/OrderFields.graphql"
+
+query StationBoard($id: ID!) {
+  station(id: $id) {
+    id
+    name
+    openSession {
+      id
+      status
+      orders {
+        ...OrderFields
+      }
+    }
+  }
+}

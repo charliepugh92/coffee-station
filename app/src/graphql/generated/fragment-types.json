@@ -3,6 +3,12 @@
     "MenuMutations": [
       "Mutation"
     ],
+    "OrderMutations": [
+      "Mutation"
+    ],
+    "OrderQueries": [
+      "Query"
+    ],
     "SessionMutations": [
       "Mutation"
     ],

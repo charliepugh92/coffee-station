@@ -1,5 +1,6 @@
 class Session < ApplicationRecord
   belongs_to :station
+  has_many :orders, dependent: :destroy
 
   has_secure_token :share_token
 

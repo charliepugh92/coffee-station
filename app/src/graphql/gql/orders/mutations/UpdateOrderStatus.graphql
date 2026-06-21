@@ -1,0 +1,10 @@
+#import "../../fragments/OrderFields.graphql"
+
+mutation UpdateOrderStatus($orderId: ID!, $status: OrderStatusEnum!) {
+  updateOrderStatus(input: { orderId: $orderId, status: $status }) {
+    order {
+      ...OrderFields
+    }
+    errors
+  }
+}

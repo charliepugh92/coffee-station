@@ -1,15 +1,28 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuery } from '@vue/apollo-composable'
 import SessionByTokenDocument from '@/graphql/gql/sessions/queries/SessionByToken.graphql'
 import type { SessionByTokenQuery, SessionByTokenQueryVariables } from '@/graphql/generated/types'
+import { useGuestStore } from '@/stores/guest'
+import OrderForm from '@/components/order/OrderForm.vue'
+import OrderStatus from '@/components/order/OrderStatus.vue'
 
 const route = useRoute()
 const token = route.params.token as string
+const guest = useGuestStore()
+const placedToken = ref<string | null>(null)
+
 const { result, loading } = useQuery<SessionByTokenQuery, SessionByTokenQueryVariables>(
   SessionByTokenDocument,
   { token },
 )
+
+function onPlaced(orderToken: string, orderId: string, guestName: string) {
+  const stationName = result.value?.sessionByToken?.station.name ?? 'Coffee'
+  guest.remember({ orderId, orderToken, guestName, stationName, createdAt: new Date().toISOString() })
+  placedToken.value = orderToken
+}
 </script>
 
 <template>
@@ -26,6 +39,10 @@ const { result, loading } = useQuery<SessionByTokenQuery, SessionByTokenQueryVar
     >
       This coffee link isn't valid.
     </p>
+    <OrderStatus
+      v-else-if="placedToken"
+      :token="placedToken"
+    />
     <p
       v-else-if="result.sessionByToken.status === 'CLOSED'"
       class="rounded bg-stone-100 p-4 text-stone-500"
@@ -38,31 +55,17 @@ const { result, loading } = useQuery<SessionByTokenQuery, SessionByTokenQueryVar
       </h2>
       <p
         v-if="result.sessionByToken.station.description"
-        class="mt-1 text-sm text-stone-500"
+        class="mt-1 mb-4 text-sm text-stone-500"
       >
         {{ result.sessionByToken.station.description }}
       </p>
-      <div
-        v-for="c in result.sessionByToken.station.customizationCategories"
-        :key="c.id"
-        class="mt-4"
-      >
-        <h3 class="text-sm font-medium text-stone-700">
-          {{ c.name }}
-        </h3>
-        <ul class="mt-1 text-sm text-stone-600">
-          <li
-            v-for="o in c.options"
-            :key="o.id"
-          >
-            {{ o.name }}
-            <span
-              v-if="o.surchargeCents"
-              class="text-stone-400"
-            >+{{ (o.surchargeCents / 100).toFixed(2) }}</span>
-          </li>
-        </ul>
-      </div>
+      <OrderForm
+        :session-token="token"
+        :categories="result.sessionByToken.station.customizationCategories"
+        :presets="result.sessionByToken.station.menuPresets"
+        :default-name="guest.lastName"
+        @placed="onPlaced"
+      />
     </div>
   </section>
 </template>

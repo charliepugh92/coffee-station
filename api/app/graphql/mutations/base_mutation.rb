@@ -47,6 +47,13 @@ module Mutations
       Session.where(station: current_user.stations).find_by(id:) || not_found!("Session")
     end
 
+    def find_owned_order!(id)
+      require_auth!
+      Order.joins(session: :station)
+           .where(stations: { user_id: current_user.id })
+           .find_by(id:) || not_found!("Order")
+    end
+
     def not_found!(label)
       raise GraphQL::ExecutionError, "#{label} not found"
     end
