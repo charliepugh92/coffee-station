@@ -1,0 +1,7 @@
+#import "../../fragments/OrderFields.graphql"
+
+query OrdersByTokens($tokens: [String!]!) {
+  ordersByTokens(tokens: $tokens) {
+    ...OrderFields
+  }
+}

@@ -13,7 +13,13 @@ const auth = useAuthStore()
       >
         Davey's Coffee
       </RouterLink>
-      <nav class="text-sm">
+      <nav class="flex items-center gap-4 text-sm">
+        <RouterLink
+          to="/my-orders"
+          class="text-stone-600 hover:text-stone-900"
+        >
+          Your orders
+        </RouterLink>
         <RouterLink
           v-if="auth.isAuthenticated"
           to="/dashboard"

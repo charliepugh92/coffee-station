@@ -170,6 +170,15 @@ declare module '*/CreateOrder.graphql' {
 }
     
 
+declare module '*/Reorder.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const Reorder: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/UpdateOrderStatus.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -183,6 +192,15 @@ declare module '*/OrderByToken.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
   export const OrderByToken: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/OrdersByTokens.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const OrdersByTokens: DocumentNode;
 
   export default defaultDocument;
 }

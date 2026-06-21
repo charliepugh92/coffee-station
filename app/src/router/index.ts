@@ -47,6 +47,12 @@ const router = createRouter({
       name: 'guest-order',
       component: () => import('@/views/GuestOrderView.vue'),
     },
+    {
+      // Returning-customer hub — reads the browser's persisted order list.
+      path: '/my-orders',
+      name: 'my-orders',
+      component: () => import('@/views/MyOrdersView.vue'),
+    },
   ],
 })
 

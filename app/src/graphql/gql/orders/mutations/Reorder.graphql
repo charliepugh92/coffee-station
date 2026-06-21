@@ -1,0 +1,11 @@
+#import "../../fragments/OrderFields.graphql"
+
+mutation Reorder($orderToken: String!) {
+  reorder(input: { orderToken: $orderToken }) {
+    order {
+      ...OrderFields
+    }
+    guestToken
+    errors
+  }
+}

@@ -6,6 +6,8 @@ module Types
       description "A guest's coffee order"
 
       field :base_option, CustomizationOptionType, null: true, description: "The chosen base drink, if any"
+      field :can_reorder, Boolean, null: false,
+        description: "Whether the order's station is currently open, so it can be reordered"
       field :comments, [ CommentType ], null: false, description: "Guest comments on this order"
       field :completion_photo_url, String, null: true, description: "Photo of the finished drink, once ready"
       field :created_at, GraphQL::Types::ISO8601DateTime, null: false, description: "When the order was placed"
@@ -23,6 +25,10 @@ module Types
 
       def completion_photo_url
         attachment_url(object.completion_photo)
+      end
+
+      def can_reorder
+        object.session.station.open_session.present?
       end
 
       def station_name
