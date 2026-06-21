@@ -1,0 +1,11 @@
+fragment PresetFields on MenuPreset {
+  id
+  name
+  description
+  position
+  imageUrl
+  options {
+    id
+    name
+  }
+}

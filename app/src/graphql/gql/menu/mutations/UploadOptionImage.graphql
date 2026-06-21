@@ -1,0 +1,10 @@
+#import "../../fragments/OptionFields.graphql"
+
+mutation UploadOptionImage($optionId: ID!, $file: Upload!) {
+  uploadOptionImage(input: { optionId: $optionId, file: $file }) {
+    option {
+      ...OptionFields
+    }
+    errors
+  }
+}

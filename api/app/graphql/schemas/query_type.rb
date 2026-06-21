@@ -9,6 +9,7 @@ module Schemas
     description "Root query type"
 
     implements Schemas::Users::Queries
+    implements Schemas::Stations::Queries
 
     field :api_version, String, null: false, description: "The running API version string"
 

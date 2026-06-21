@@ -1,0 +1,6 @@
+mutation DeletePreset($id: ID!) {
+  deletePreset(input: { id: $id }) {
+    success
+    errors
+  }
+}

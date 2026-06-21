@@ -1,0 +1,7 @@
+fragment OptionFields on CustomizationOption {
+  id
+  name
+  surchargeCents
+  position
+  imageUrl
+}

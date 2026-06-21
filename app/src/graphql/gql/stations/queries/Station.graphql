@@ -1,0 +1,7 @@
+#import "../../fragments/StationDetail.graphql"
+
+query Station($id: ID!) {
+  station(id: $id) {
+    ...StationDetail
+  }
+}

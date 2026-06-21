@@ -1,0 +1,10 @@
+#import "../../fragments/PresetFields.graphql"
+
+mutation UpsertPreset($stationId: ID!, $id: ID, $attrs: PresetAttrsInput!, $optionIds: [ID!]) {
+  upsertPreset(input: { stationId: $stationId, id: $id, attrs: $attrs, optionIds: $optionIds }) {
+    preset {
+      ...PresetFields
+    }
+    errors
+  }
+}

@@ -1,5 +1,14 @@
 {
   "possibleTypes": {
+    "MenuMutations": [
+      "Mutation"
+    ],
+    "StationMutations": [
+      "Mutation"
+    ],
+    "StationQueries": [
+      "Query"
+    ],
     "UserQueries": [
       "Query"
     ]

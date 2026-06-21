@@ -1,0 +1,15 @@
+#import "./CategoryFields.graphql"
+#import "./PresetFields.graphql"
+
+fragment StationDetail on Station {
+  id
+  name
+  slug
+  description
+  customizationCategories {
+    ...CategoryFields
+  }
+  menuPresets {
+    ...PresetFields
+  }
+}

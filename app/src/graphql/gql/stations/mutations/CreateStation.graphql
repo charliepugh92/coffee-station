@@ -1,0 +1,11 @@
+mutation CreateStation($attrs: StationAttrsInput!) {
+  createStation(input: { attrs: $attrs }) {
+    station {
+      id
+      name
+      slug
+      description
+    }
+    errors
+  }
+}

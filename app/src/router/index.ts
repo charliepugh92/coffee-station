@@ -29,6 +29,12 @@ const router = createRouter({
       component: () => import('@/views/DashboardView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/stations/:id',
+      name: 'station-edit',
+      component: () => import('@/views/StationEditView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

@@ -16,5 +16,34 @@ module Mutations
     def require_auth!
       raise GraphQL::ExecutionError, "Authentication required" unless current_user
     end
+
+    # Ownership-scoped finders — every host mutation acts only on records that
+    # belong to the authenticated user's stations.
+    def find_owned_station!(id)
+      require_auth!
+      current_user.stations.find_by(id:) || not_found!("Station")
+    end
+
+    def find_owned_category!(id)
+      require_auth!
+      CustomizationCategory.where(station: current_user.stations).find_by(id:) || not_found!("Category")
+    end
+
+    def find_owned_option!(id)
+      require_auth!
+      CustomizationOption
+        .joins(customization_category: :station)
+        .where(stations: { user_id: current_user.id })
+        .find_by(id:) || not_found!("Option")
+    end
+
+    def find_owned_preset!(id)
+      require_auth!
+      MenuPreset.where(station: current_user.stations).find_by(id:) || not_found!("Preset")
+    end
+
+    def not_found!(label)
+      raise GraphQL::ExecutionError, "#{label} not found"
+    end
   end
 end

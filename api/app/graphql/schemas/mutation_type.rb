@@ -8,6 +8,9 @@ module Schemas
   class MutationType < Types::Objects::BaseObject
     description "Root mutation type"
 
+    implements Schemas::Stations::Mutations
+    implements Schemas::Menu::Mutations
+
     field :ping, Boolean, null: false, description: "No-op health-check mutation"
 
     def ping

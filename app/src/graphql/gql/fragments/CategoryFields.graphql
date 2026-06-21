@@ -1,0 +1,12 @@
+#import "./OptionFields.graphql"
+
+fragment CategoryFields on CustomizationCategory {
+  id
+  name
+  selectionMode
+  required
+  position
+  options {
+    ...OptionFields
+  }
+}

@@ -1,0 +1,6 @@
+mutation DeleteOption($id: ID!) {
+  deleteOption(input: { id: $id }) {
+    success
+    errors
+  }
+}

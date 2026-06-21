@@ -1,0 +1,22 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": "bundle",
+      "runtimeArgs": ["exec", "rails", "server", "-p", "3000"],
+      "cwd": "api",
+      "port": 3000
+    },
+    {
+      "name": "app",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "source \"${NVM_DIR:-$HOME/.nvm}/nvm.sh\" && nvm use && npm run dev"
+      ],
+      "cwd": "app",
+      "port": 5173
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+query MyStations {
+  myStations {
+    id
+    name
+    slug
+    description
+  }
+}

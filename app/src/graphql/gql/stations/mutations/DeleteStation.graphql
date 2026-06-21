@@ -1,0 +1,6 @@
+mutation DeleteStation($id: ID!) {
+  deleteStation(input: { id: $id }) {
+    success
+    errors
+  }
+}

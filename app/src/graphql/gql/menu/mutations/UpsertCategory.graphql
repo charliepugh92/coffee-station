@@ -1,0 +1,10 @@
+#import "../../fragments/CategoryFields.graphql"
+
+mutation UpsertCategory($stationId: ID!, $id: ID, $attrs: CategoryAttrsInput!) {
+  upsertCategory(input: { stationId: $stationId, id: $id, attrs: $attrs }) {
+    category {
+      ...CategoryFields
+    }
+    errors
+  }
+}

@@ -1,0 +1,10 @@
+#import "../../fragments/PresetFields.graphql"
+
+mutation UploadPresetImage($presetId: ID!, $file: Upload!) {
+  uploadPresetImage(input: { presetId: $presetId, file: $file }) {
+    preset {
+      ...PresetFields
+    }
+    errors
+  }
+}

@@ -1,0 +1,10 @@
+#import "../../fragments/OptionFields.graphql"
+
+mutation UpsertOption($categoryId: ID!, $id: ID, $attrs: OptionAttrsInput!) {
+  upsertOption(input: { categoryId: $categoryId, id: $id, attrs: $attrs }) {
+    option {
+      ...OptionFields
+    }
+    errors
+  }
+}
