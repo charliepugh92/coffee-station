@@ -14,6 +14,8 @@ module Mutations
       def resolve(order_id:, status:)
         order = find_owned_order!(order_id)
         order.update!(status:)
+        trigger_order_updated(order)
+        trigger_queue_refresh(order.session)
         { order:, errors: [] }
       end
     end

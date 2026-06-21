@@ -15,6 +15,7 @@ module Mutations
         return { session: nil, errors: [ "Station is already open" ] } if station.open_session
 
         session = station.sessions.create!(status: :open, opened_at: Time.current)
+        trigger_session_updated(session)
         { session:, errors: [] }
       rescue ActiveRecord::RecordNotUnique
         { session: nil, errors: [ "Station is already open" ] }

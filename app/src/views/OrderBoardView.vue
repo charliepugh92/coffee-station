@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useQuery } from '@vue/apollo-composable'
+import { useQuery, useSubscription } from '@vue/apollo-composable'
 import { apolloClient } from '@/utils/apolloClient'
 import StationBoardDocument from '@/graphql/gql/stations/queries/StationBoard.graphql'
+import OrderAddedDocument from '@/graphql/gql/orders/subscriptions/OrderAdded.graphql'
 import UpdateOrderStatusDocument from '@/graphql/gql/orders/mutations/UpdateOrderStatus.graphql'
 import type {
   StationBoardQuery,
   StationBoardQueryVariables,
+  OrderAddedSubscription,
+  OrderAddedSubscriptionVariables,
   UpdateOrderStatusMutation,
   UpdateOrderStatusMutationVariables,
   OrderStatusEnum,
@@ -15,6 +19,16 @@ import type {
 const route = useRoute()
 const id = route.params.id as string
 const { result, refetch } = useQuery<StationBoardQuery, StationBoardQueryVariables>(StationBoardDocument, { id })
+
+// Live board: when a guest places an order, refetch to pull the new card and
+// recompute queue positions. Enabled once the share token is known.
+const shareToken = computed(() => result.value?.station?.openSession?.shareToken ?? '')
+const { onResult: onOrderAdded } = useSubscription<OrderAddedSubscription, OrderAddedSubscriptionVariables>(
+  OrderAddedDocument,
+  () => ({ sessionToken: shareToken.value }),
+  () => ({ enabled: !!shareToken.value }),
+)
+onOrderAdded(() => refetch())
 
 const NEXT: Record<string, { status: OrderStatusEnum; label: string } | undefined> = {
   PENDING: { status: 'IN_PROGRESS', label: 'Start' },

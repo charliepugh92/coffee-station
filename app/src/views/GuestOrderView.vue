@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useQuery } from '@vue/apollo-composable'
+import { useQuery, useSubscription } from '@vue/apollo-composable'
 import SessionByTokenDocument from '@/graphql/gql/sessions/queries/SessionByToken.graphql'
-import type { SessionByTokenQuery, SessionByTokenQueryVariables } from '@/graphql/generated/types'
+import SessionUpdatedDocument from '@/graphql/gql/sessions/subscriptions/SessionUpdated.graphql'
+import type {
+  SessionByTokenQuery,
+  SessionByTokenQueryVariables,
+  SessionUpdatedSubscription,
+  SessionUpdatedSubscriptionVariables,
+} from '@/graphql/generated/types'
 import { useGuestStore } from '@/stores/guest'
 import OrderForm from '@/components/order/OrderForm.vue'
 import OrderStatus from '@/components/order/OrderStatus.vue'
@@ -16,6 +22,14 @@ const placedToken = ref<string | null>(null)
 const { result, loading } = useQuery<SessionByTokenQuery, SessionByTokenQueryVariables>(
   SessionByTokenDocument,
   { token },
+)
+
+// If the host closes the station while a guest is looking at the menu, the
+// cache update flips this page to the "closed" state live (Session is
+// normalized by id).
+useSubscription<SessionUpdatedSubscription, SessionUpdatedSubscriptionVariables>(
+  SessionUpdatedDocument,
+  () => ({ sessionToken: token }),
 )
 
 function onPlaced(orderToken: string, orderId: string, guestName: string) {

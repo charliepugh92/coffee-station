@@ -1,0 +1,9 @@
+#import "../../fragments/OrderFields.graphql"
+
+subscription OrderAdded($sessionToken: String!) {
+  orderAdded(sessionToken: $sessionToken) {
+    order {
+      ...OrderFields
+    }
+  }
+}

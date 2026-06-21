@@ -1,0 +1,9 @@
+#import "../../fragments/OrderFields.graphql"
+
+subscription OrderUpdated($orderToken: String!) {
+  orderUpdated(orderToken: $orderToken) {
+    order {
+      ...OrderFields
+    }
+  }
+}

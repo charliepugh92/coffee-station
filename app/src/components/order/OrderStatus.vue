@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useQuery } from '@vue/apollo-composable'
+import { useQuery, useSubscription } from '@vue/apollo-composable'
 import OrderByTokenDocument from '@/graphql/gql/orders/queries/OrderByToken.graphql'
-import type { OrderByTokenQuery, OrderByTokenQueryVariables } from '@/graphql/generated/types'
+import OrderUpdatedDocument from '@/graphql/gql/orders/subscriptions/OrderUpdated.graphql'
+import type {
+  OrderByTokenQuery,
+  OrderByTokenQueryVariables,
+  OrderUpdatedSubscription,
+  OrderUpdatedSubscriptionVariables,
+} from '@/graphql/generated/types'
 import { orderStatusMessage } from '@/utils/orderStatus'
 
 const props = defineProps<{ token: string }>()
@@ -10,6 +16,14 @@ const props = defineProps<{ token: string }>()
 const { result } = useQuery<OrderByTokenQuery, OrderByTokenQueryVariables>(
   OrderByTokenDocument,
   () => ({ token: props.token }),
+)
+
+// Live updates: the cache normalizes Order by id, so delivering the updated
+// order here automatically refreshes the query result above (status, queue
+// position, completion photo) with no refetch.
+useSubscription<OrderUpdatedSubscription, OrderUpdatedSubscriptionVariables>(
+  OrderUpdatedDocument,
+  () => ({ orderToken: props.token }),
 )
 
 const order = computed(() => result.value?.orderByToken ?? null)

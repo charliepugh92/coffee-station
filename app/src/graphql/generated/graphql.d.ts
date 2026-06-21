@@ -161,6 +161,24 @@ declare module '*/OrderByToken.graphql' {
 }
     
 
+declare module '*/OrderAdded.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const OrderAdded: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/OrderUpdated.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const OrderUpdated: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/CloseSession.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -183,6 +201,15 @@ declare module '*/SessionByToken.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
   export const SessionByToken: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/SessionUpdated.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const SessionUpdated: DocumentNode;
 
   export default defaultDocument;
 }

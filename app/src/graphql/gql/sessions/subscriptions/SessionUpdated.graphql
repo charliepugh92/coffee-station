@@ -1,0 +1,8 @@
+subscription SessionUpdated($sessionToken: String!) {
+  sessionUpdated(sessionToken: $sessionToken) {
+    session {
+      id
+      status
+    }
+  }
+}

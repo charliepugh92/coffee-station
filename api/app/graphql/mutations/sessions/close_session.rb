@@ -13,6 +13,7 @@ module Mutations
       def resolve(id:)
         session = find_owned_session!(id)
         session.close! if session.open?
+        trigger_session_updated(session)
         { session:, errors: [] }
       end
     end

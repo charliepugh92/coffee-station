@@ -5,13 +5,12 @@ module Types
     class SubscriptionType < BaseObject
       description "Realtime events delivered over ActionCable"
 
-      # Real subscription fields (orderAdded / orderUpdated / sessionUpdated) are
-      # wired in the realtime milestone. A placeholder keeps the root valid.
-      field :heartbeat, Boolean, null: false, description: "Placeholder keepalive field"
-
-      def heartbeat
-        true
-      end
+      field :order_added, subscription: ::Subscriptions::OrderAdded,
+        description: "A guest placed an order in the watched session"
+      field :order_updated, subscription: ::Subscriptions::OrderUpdated,
+        description: "The watched order changed (status, photo, or queue position)"
+      field :session_updated, subscription: ::Subscriptions::SessionUpdated,
+        description: "The watched session was opened or closed"
     end
   end
 end

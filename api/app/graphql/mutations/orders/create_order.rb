@@ -26,6 +26,7 @@ module Mutations
         return error(order.errors.full_messages) unless order.save
 
         order.customization_option_ids = sanitize_options(station, attrs.option_ids) if attrs.option_ids
+        trigger_order_added(order)
         { order:, guest_token: order.guest_token, errors: [] }
       end
 

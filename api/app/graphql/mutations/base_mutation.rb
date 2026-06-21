@@ -57,5 +57,25 @@ module Mutations
     def not_found!(label)
       raise GraphQL::ExecutionError, "#{label} not found"
     end
+
+    # --- Realtime triggers (GraphQL subscriptions over ActionCable) ---
+
+    def trigger_order_added(order)
+      ApiSchema.subscriptions.trigger(:order_added, { session_token: order.session.share_token }, order)
+    end
+
+    def trigger_order_updated(order)
+      ApiSchema.subscriptions.trigger(:order_updated, { order_token: order.guest_token }, order)
+    end
+
+    def trigger_session_updated(session)
+      ApiSchema.subscriptions.trigger(:session_updated, { session_token: session.share_token }, session)
+    end
+
+    # Re-notify every still-queued order in the session so each guest's
+    # queuePosition re-renders after one ahead of them is finished/advanced.
+    def trigger_queue_refresh(session)
+      session.orders.where(status: Order::ACTIVE_STATUSES).find_each { |order| trigger_order_updated(order) }
+    end
   end
 end
