@@ -19,4 +19,13 @@ fragment OrderFields on Order {
     id
     name
   }
+  rating {
+    id
+    stars
+  }
+  comments {
+    id
+    body
+    createdAt
+  }
 }

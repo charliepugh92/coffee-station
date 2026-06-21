@@ -111,6 +111,17 @@ async function complete(orderId: string, event: Event) {
           >
             “{{ o.notes }}”
           </div>
+          <div
+            v-if="o.rating || o.comments.length"
+            class="mt-1 text-xs text-amber-600"
+          >
+            <span v-if="o.rating">{{ '★'.repeat(o.rating.stars) }}</span>
+            <span
+              v-for="c in o.comments"
+              :key="c.id"
+              class="ml-1 text-stone-500"
+            >“{{ c.body }}”</span>
+          </div>
         </div>
         <div class="flex items-center gap-3">
           <span class="text-xs uppercase tracking-wide text-stone-400">{{ o.status.replace('_', ' ') }}</span>

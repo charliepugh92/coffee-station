@@ -1,0 +1,10 @@
+mutation AddComment($orderToken: String!, $body: String!) {
+  addComment(input: { orderToken: $orderToken, body: $body }) {
+    comment {
+      id
+      body
+      createdAt
+    }
+    errors
+  }
+}

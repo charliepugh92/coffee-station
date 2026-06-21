@@ -6,6 +6,7 @@ module Types
       description "A guest's coffee order"
 
       field :base_option, CustomizationOptionType, null: true, description: "The chosen base drink, if any"
+      field :comments, [ CommentType ], null: false, description: "Guest comments on this order"
       field :completion_photo_url, String, null: true, description: "Photo of the finished drink, once ready"
       field :created_at, GraphQL::Types::ISO8601DateTime, null: false, description: "When the order was placed"
       field :guest_name, String, null: false, description: "Name the guest gave"
@@ -14,6 +15,7 @@ module Types
       field :notes, String, null: true, description: "Free-text notes from the guest"
       field :queue_position, Integer, null: true,
         description: "1-based spot in the make-line, or null once ready/picked up"
+      field :rating, RatingType, null: true, description: "The guest's rating, once left"
       field :selections, [ CustomizationOptionType ], null: false,
         description: "Chosen customization options", method: :customization_options
       field :station_name, String, null: false, description: "Name of the station this order was placed at"

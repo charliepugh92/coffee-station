@@ -10,11 +10,27 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = { me: { id: string, email: string, displayName: string, createdAt: string } | null };
 
+export type AddCommentMutationVariables = Exact<{
+  orderToken: string;
+  body: string;
+}>;
+
+
+export type AddCommentMutation = { addComment: { errors: Array<string>, comment: { id: string, body: string, createdAt: string } | null } | null };
+
+export type RateOrderMutationVariables = Exact<{
+  orderToken: string;
+  stars: number;
+}>;
+
+
+export type RateOrderMutation = { rateOrder: { errors: Array<string>, rating: { id: string, stars: number } | null } | null };
+
 export type CategoryFieldsFragment = { id: string, name: string, selectionMode: Types.SelectionModeEnum, required: boolean, position: number, options: Array<{ id: string, name: string, surchargeCents: number | null, position: number, imageUrl: string | null }> };
 
 export type OptionFieldsFragment = { id: string, name: string, surchargeCents: number | null, position: number, imageUrl: string | null };
 
-export type OrderFieldsFragment = { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }> };
+export type OrderFieldsFragment = { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }>, rating: { id: string, stars: number } | null, comments: Array<{ id: string, body: string, createdAt: string }> };
 
 export type PresetFieldsFragment = { id: string, name: string, description: string | null, position: number, imageUrl: string | null, options: Array<{ id: string, name: string }> };
 
@@ -93,7 +109,7 @@ export type CompleteOrderMutationVariables = Exact<{
 }>;
 
 
-export type CompleteOrderMutation = { completeOrder: { errors: Array<string>, order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }> } | null } | null };
+export type CompleteOrderMutation = { completeOrder: { errors: Array<string>, order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }>, rating: { id: string, stars: number } | null, comments: Array<{ id: string, body: string, createdAt: string }> } | null } | null };
 
 export type CreateOrderMutationVariables = Exact<{
   sessionToken: string;
@@ -101,7 +117,7 @@ export type CreateOrderMutationVariables = Exact<{
 }>;
 
 
-export type CreateOrderMutation = { createOrder: { guestToken: string | null, errors: Array<string>, order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }> } | null } | null };
+export type CreateOrderMutation = { createOrder: { guestToken: string | null, errors: Array<string>, order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }>, rating: { id: string, stars: number } | null, comments: Array<{ id: string, body: string, createdAt: string }> } | null } | null };
 
 export type UpdateOrderStatusMutationVariables = Exact<{
   orderId: string | number;
@@ -109,28 +125,28 @@ export type UpdateOrderStatusMutationVariables = Exact<{
 }>;
 
 
-export type UpdateOrderStatusMutation = { updateOrderStatus: { errors: Array<string>, order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }> } | null } | null };
+export type UpdateOrderStatusMutation = { updateOrderStatus: { errors: Array<string>, order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }>, rating: { id: string, stars: number } | null, comments: Array<{ id: string, body: string, createdAt: string }> } | null } | null };
 
 export type OrderByTokenQueryVariables = Exact<{
   token: string;
 }>;
 
 
-export type OrderByTokenQuery = { orderByToken: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }> } | null };
+export type OrderByTokenQuery = { orderByToken: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }>, rating: { id: string, stars: number } | null, comments: Array<{ id: string, body: string, createdAt: string }> } | null };
 
 export type OrderAddedSubscriptionVariables = Exact<{
   sessionToken: string;
 }>;
 
 
-export type OrderAddedSubscription = { orderAdded: { order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }> } } };
+export type OrderAddedSubscription = { orderAdded: { order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }>, rating: { id: string, stars: number } | null, comments: Array<{ id: string, body: string, createdAt: string }> } } };
 
 export type OrderUpdatedSubscriptionVariables = Exact<{
   orderToken: string;
 }>;
 
 
-export type OrderUpdatedSubscription = { orderUpdated: { order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }> } } };
+export type OrderUpdatedSubscription = { orderUpdated: { order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }>, rating: { id: string, stars: number } | null, comments: Array<{ id: string, body: string, createdAt: string }> } } };
 
 export type CloseSessionMutationVariables = Exact<{
   id: string | number;
@@ -191,7 +207,7 @@ export type StationBoardQueryVariables = Exact<{
 }>;
 
 
-export type StationBoardQuery = { station: { id: string, name: string, openSession: { id: string, status: Types.SessionStatusEnum, shareToken: string | null, orders: Array<{ id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }> }> } | null } | null };
+export type StationBoardQuery = { station: { id: string, name: string, openSession: { id: string, status: Types.SessionStatusEnum, shareToken: string | null, orders: Array<{ id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, baseOption: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }>, rating: { id: string, stars: number } | null, comments: Array<{ id: string, body: string, createdAt: string }> }> } | null } | null };
 
 export type ApiVersionQueryVariables = Exact<{ [key: string]: never; }>;
 

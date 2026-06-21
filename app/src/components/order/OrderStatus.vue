@@ -10,10 +10,11 @@ import type {
   OrderUpdatedSubscriptionVariables,
 } from '@/graphql/generated/types'
 import { orderStatusMessage } from '@/utils/orderStatus'
+import OrderFeedback from '@/components/order/OrderFeedback.vue'
 
 const props = defineProps<{ token: string }>()
 
-const { result } = useQuery<OrderByTokenQuery, OrderByTokenQueryVariables>(
+const { result, refetch } = useQuery<OrderByTokenQuery, OrderByTokenQueryVariables>(
   OrderByTokenDocument,
   () => ({ token: props.token }),
 )
@@ -47,5 +48,11 @@ const message = computed(() => (order.value ? orderStatusMessage(order.value) : 
       alt="Your finished drink"
       class="mx-auto mt-4 max-h-56 rounded-lg object-cover"
     >
+    <OrderFeedback
+      v-if="order && (order.status === 'READY' || order.status === 'PICKED_UP')"
+      :token="token"
+      :stars="order.rating?.stars"
+      @changed="refetch"
+    />
   </div>
 </template>

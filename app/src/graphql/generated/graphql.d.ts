@@ -8,6 +8,24 @@ declare module '*/Me.graphql' {
 }
     
 
+declare module '*/AddComment.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const AddComment: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/RateOrder.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const RateOrder: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/CategoryFields.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;

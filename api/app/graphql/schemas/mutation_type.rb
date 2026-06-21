@@ -12,6 +12,7 @@ module Schemas
     implements Schemas::Menu::Mutations
     implements Schemas::Sessions::Mutations
     implements Schemas::Orders::Mutations
+    implements Schemas::Feedback::Mutations
 
     field :ping, Boolean, null: false, description: "No-op health-check mutation"
 

@@ -1,0 +1,9 @@
+mutation RateOrder($orderToken: String!, $stars: Int!) {
+  rateOrder(input: { orderToken: $orderToken, stars: $stars }) {
+    rating {
+      id
+      stars
+    }
+    errors
+  }
+}

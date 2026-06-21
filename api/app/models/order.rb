@@ -5,6 +5,8 @@ class Order < ApplicationRecord
   has_one_attached :completion_photo
   has_many :order_selections, dependent: :destroy
   has_many :customization_options, through: :order_selections
+  has_one :rating, dependent: :destroy
+  has_many :comments, dependent: :destroy
 
   has_secure_token :guest_token
 

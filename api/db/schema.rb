@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_21_200418) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_21_202933) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_200418) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.bigint "order_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_comments_on_order_id"
   end
 
   create_table "customization_categories", force: :cascade do |t|
@@ -113,6 +121,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_200418) do
     t.index ["session_id"], name: "index_orders_on_session_id"
   end
 
+  create_table "ratings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "order_id", null: false
+    t.integer "stars", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_ratings_on_order_id", unique: true
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "closed_at"
     t.datetime "created_at", null: false
@@ -154,6 +170,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_200418) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "comments", "orders"
   add_foreign_key "customization_categories", "stations"
   add_foreign_key "customization_options", "customization_categories"
   add_foreign_key "menu_preset_options", "customization_options"
@@ -164,6 +181,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_200418) do
   add_foreign_key "orders", "customization_options", column: "base_option_id"
   add_foreign_key "orders", "menu_presets"
   add_foreign_key "orders", "sessions"
+  add_foreign_key "ratings", "orders"
   add_foreign_key "sessions", "stations"
   add_foreign_key "stations", "users"
 end
