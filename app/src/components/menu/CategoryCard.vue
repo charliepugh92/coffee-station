@@ -40,42 +40,48 @@ async function removeCategory() {
 </script>
 
 <template>
-  <div class="rounded border border-stone-200 p-3">
+  <div class="rounded-lg border-[0.5px] border-border bg-card p-4">
     <div class="flex items-center justify-between">
       <div>
-        <span class="font-medium">{{ category.name }}</span>
-        <span class="ml-2 text-xs text-stone-400">
+        <span class="font-semibold text-ink">{{ category.name }}</span>
+        <span class="ml-2 text-xs text-muted">
           {{ category.selectionMode.toLowerCase() }}{{ category.required ? ' · required' : '' }}
         </span>
       </div>
       <button
-        class="text-xs text-red-500 hover:text-red-700"
+        class="text-sm text-error hover:text-error/80"
         @click="removeCategory"
       >
         Remove
       </button>
     </div>
-    <ul class="mt-2 space-y-1">
+    <ul class="mt-3 space-y-1.5">
       <li
         v-for="o in category.options"
         :key="o.id"
-        class="flex items-center gap-2 text-sm"
+        class="flex items-center gap-2 text-sm text-ink"
       >
         <img
           v-if="o.imageUrl"
           :src="o.imageUrl"
           alt=""
-          class="h-6 w-6 rounded object-cover"
+          class="h-6 w-6 rounded-sm object-cover"
         >
         <span class="flex-1">
           {{ o.name }}
           <span
             v-if="o.surchargeCents"
-            class="text-stone-400"
+            class="text-muted"
           >+{{ (o.surchargeCents / 100).toFixed(2) }}</span>
         </span>
-        <label class="cursor-pointer text-xs text-stone-500 hover:text-stone-800">
-          photo
+        <label
+          class="flex cursor-pointer items-center text-muted hover:text-ink"
+          aria-label="Add photo"
+        >
+          <i
+            class="ti ti-camera text-base"
+            aria-hidden="true"
+          />
           <input
             type="file"
             accept="image/*"
@@ -84,29 +90,33 @@ async function removeCategory() {
           >
         </label>
         <button
-          class="text-xs text-red-400 hover:text-red-600"
+          class="text-base text-error hover:text-error/80"
+          aria-label="Remove option"
           @click="removeOption(o.id)"
         >
-          ×
+          <i
+            class="ti ti-x"
+            aria-hidden="true"
+          />
         </button>
       </li>
     </ul>
     <form
-      class="mt-2 flex gap-2"
+      class="mt-3 flex gap-2"
       @submit.prevent="addOption"
     >
       <input
         v-model="optionName"
         placeholder="Add option"
-        class="flex-1 rounded border border-stone-300 px-2 py-1 text-sm"
+        class="flex-1 rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
       <input
         v-model="surcharge"
         type="number"
         placeholder="¢"
-        class="w-16 rounded border border-stone-300 px-2 py-1 text-sm"
+        class="w-16 rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
-      <button class="rounded bg-stone-700 px-2 py-1 text-xs text-white">
+      <button class="rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]">
         Add
       </button>
     </form>
