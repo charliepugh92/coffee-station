@@ -5,32 +5,37 @@ const auth = useAuthStore()
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-50 text-stone-900">
-    <header class="flex items-center justify-between border-b border-stone-200 px-6 py-4">
+  <div class="min-h-screen bg-surface text-ink">
+    <header class="flex items-center justify-between border-b border-border px-6 py-4">
       <RouterLink
         to="/"
-        class="text-xl font-semibold tracking-tight"
+        class="flex items-center gap-3"
       >
-        Davey's Coffee
+        <img
+          src="/favicon.svg"
+          alt=""
+          class="h-8 w-8"
+        >
+        <span class="font-display text-2xl leading-none">Davey's Coffee</span>
       </RouterLink>
-      <nav class="flex items-center gap-4 text-sm">
+      <nav class="flex items-center gap-5 text-sm text-muted">
         <RouterLink
           to="/my-orders"
-          class="text-stone-600 hover:text-stone-900"
+          class="hover:text-ink"
         >
           Your orders
         </RouterLink>
         <RouterLink
           v-if="auth.isAuthenticated"
           to="/dashboard"
-          class="text-stone-600 hover:text-stone-900"
+          class="hover:text-ink"
         >
           Dashboard
         </RouterLink>
         <RouterLink
           v-else
           to="/login"
-          class="text-stone-600 hover:text-stone-900"
+          class="hover:text-ink"
         >
           Host sign in
         </RouterLink>

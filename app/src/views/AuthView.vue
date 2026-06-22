@@ -36,7 +36,7 @@ async function submit() {
 
 <template>
   <section class="mx-auto max-w-sm">
-    <h2 class="text-lg font-semibold">
+    <h2 class="font-display text-2xl">
       {{ mode === 'register' ? 'Create your station account' : 'Sign in' }}
     </h2>
     <form
@@ -49,46 +49,48 @@ async function submit() {
         type="text"
         placeholder="Display name"
         required
-        class="w-full rounded border border-stone-300 px-3 py-2"
+        class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
       <input
         v-model="email"
         type="email"
         placeholder="Email"
         required
-        class="w-full rounded border border-stone-300 px-3 py-2"
+        class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
       <input
         v-model="password"
         type="password"
         placeholder="Password"
         required
-        class="w-full rounded border border-stone-300 px-3 py-2"
+        class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
       <p
         v-if="error"
-        class="text-sm text-red-600"
+        class="text-sm text-error"
       >
         {{ error }}
       </p>
       <button
         type="submit"
         :disabled="submitting"
-        class="w-full rounded bg-stone-800 px-3 py-2 text-white disabled:opacity-50"
+        class="w-full rounded-lg bg-roast px-4 py-2 text-base font-semibold text-surface hover:bg-roast/90 active:scale-[.99] disabled:opacity-45"
       >
         {{ mode === 'register' ? 'Sign up' : 'Sign in' }}
       </button>
     </form>
-    <p class="mt-3 text-sm text-stone-500">
+    <p class="mt-3 text-sm text-muted">
       <RouterLink
         v-if="mode === 'login'"
         to="/register"
+        class="hover:text-ink"
       >
         Need an account? Sign up
       </RouterLink>
       <RouterLink
         v-else
         to="/login"
+        class="hover:text-ink"
       >
         Already have an account? Sign in
       </RouterLink>
