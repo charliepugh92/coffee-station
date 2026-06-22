@@ -39,8 +39,8 @@ async function submitComment() {
 </script>
 
 <template>
-  <div class="mt-4 border-t border-stone-100 pt-4">
-    <p class="text-sm text-stone-500">
+  <div class="mt-4 border-t border-border pt-4">
+    <p class="text-sm text-muted">
       How was it?
     </p>
     <div class="mt-1 flex justify-center gap-1">
@@ -48,11 +48,14 @@ async function submitComment() {
         v-for="n in 5"
         :key="n"
         type="button"
-        class="text-2xl"
-        :class="n <= current ? 'text-amber-400' : 'text-stone-300'"
+        :aria-label="`Rate ${n} star${n === 1 ? '' : 's'}`"
+        class="leading-none"
         @click="rate(n)"
       >
-        ★
+        <i
+          class="ti ti-star text-[22px]"
+          :class="n <= current ? 'text-caramel' : 'text-star-empty'"
+        />
       </button>
     </div>
     <form
@@ -62,15 +65,15 @@ async function submitComment() {
       <input
         v-model="comment"
         placeholder="Leave a comment"
-        class="flex-1 rounded border border-stone-300 px-2 py-1 text-sm"
+        class="flex-1 rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
-      <button class="rounded bg-stone-700 px-3 py-1 text-xs text-white">
+      <button class="rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]">
         Send
       </button>
     </form>
     <p
       v-if="sent"
-      class="mt-1 text-xs text-green-600"
+      class="mt-2 font-accent text-base text-success"
     >
       Thanks for the feedback!
     </p>

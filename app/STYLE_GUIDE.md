@@ -106,15 +106,17 @@ Three faces. Each has one job. Never mix jobs.
 
 ### Scale
 
-| Class | Size / weight | Use |
+Compose with Tailwind utilities — there are no semantic alias classes.
+
+| Role | Tailwind | Where |
 |---|---|---|
-| `text-display` | Anton 32/1.0 | Page hero ("Open the bar") |
-| `text-heading` | Anton 21/1.1 | View titles, station names |
-| `text-card-title` | Anton 20/1.1 | Inside cards ("Your coffee's ready") |
-| `text-accent` | Caveat 600 18 | Taglines, hand-written notes |
-| `text-body` | Inter 400 16/1.6 | Default prose |
-| `text-meta` | Inter 400 13 | "Maya's Corner · for Sam · #3" |
-| `text-label` | Inter 600 11/.1em uppercase | Status pills, eyebrows |
+| Hero | `font-display text-3xl leading-none` | Page hero ("Open the bar") |
+| View title | `font-display text-2xl` | View titles, station names |
+| Card title | `font-display text-xl leading-tight` | Inside cards ("Your coffee's ready") |
+| Accent | `font-accent text-base` (or `text-2xl` for taglines) | Taglines, hand-written notes |
+| Body | `text-base text-ink` | Default prose |
+| Meta | `text-sm text-muted` | "Maya's Corner · for Sam · #3" |
+| Label / pill | `text-[11px] font-semibold uppercase tracking-[.08em]` | Status pills, eyebrows |
 
 ### Rules
 
@@ -278,11 +280,11 @@ feedback widget, 18px on summary cards.
 
 ```html
 <div class="rounded-lg border-[0.5px] border-border bg-card p-6 text-center">
-  <span class="mx-auto mb-2 flex h-11 w-11 items-center justify-center
+  <span class="mx-auto mb-3 flex h-11 w-11 items-center justify-center
                rounded-full bg-accent-tint text-roast">
-    <i class="ti ti-coffee text-[22px]" />
+    <i class="ti ti-coffee text-[22px]" aria-hidden="true" />
   </span>
-  <p class="font-display text-card-title">Your coffee's ready</p>
+  <p class="font-display text-xl leading-tight">Your coffee's ready!</p>
   <p class="mt-1 font-accent text-base text-muted">
     Maya's Corner · for Sam
   </p>

@@ -32,13 +32,19 @@ const message = computed(() => (order.value ? orderStatusMessage(order.value) : 
 </script>
 
 <template>
-  <div class="rounded-lg border border-stone-200 bg-white p-6 text-center">
-    <p class="text-lg font-semibold text-stone-800">
+  <div class="rounded-lg border-[0.5px] border-border bg-card p-6 text-center">
+    <span class="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-accent-tint text-roast">
+      <i
+        class="ti ti-coffee text-[22px]"
+        aria-hidden="true"
+      />
+    </span>
+    <p class="font-display text-xl leading-tight">
       {{ message }}
     </p>
     <p
       v-if="order"
-      class="mt-1 text-sm text-stone-400"
+      class="mt-1 font-accent text-base text-muted"
     >
       {{ order.stationName }} · for {{ order.guestName }}
     </p>
