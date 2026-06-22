@@ -1,4 +1,13 @@
 
+declare module '*/UpdateAccount.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const UpdateAccount: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/Me.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -21,6 +30,15 @@ declare module '*/RateOrder.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
   export const RateOrder: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/BaseFields.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const BaseFields: DocumentNode;
 
   export default defaultDocument;
 }
@@ -80,6 +98,15 @@ declare module '*/UserFields.graphql' {
 }
     
 
+declare module '*/DeleteBase.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const DeleteBase: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/DeleteCategory.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -107,6 +134,15 @@ declare module '*/DeletePreset.graphql' {
 }
     
 
+declare module '*/UploadBaseImage.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const UploadBaseImage: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/UploadOptionImage.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -120,6 +156,15 @@ declare module '*/UploadPresetImage.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
   export const UploadPresetImage: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/UpsertBase.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const UpsertBase: DocumentNode;
 
   export default defaultDocument;
 }
@@ -170,6 +215,15 @@ declare module '*/CreateOrder.graphql' {
 }
     
 
+declare module '*/DeleteOrder.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const DeleteOrder: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/Reorder.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -192,6 +246,15 @@ declare module '*/OrderByToken.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
   export const OrderByToken: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/OrderHistory.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const OrderHistory: DocumentNode;
 
   export default defaultDocument;
 }

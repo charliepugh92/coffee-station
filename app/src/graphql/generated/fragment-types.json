@@ -24,6 +24,9 @@
     "StationQueries": [
       "Query"
     ],
+    "UserMutations": [
+      "Mutation"
+    ],
     "UserQueries": [
       "Query"
     ]

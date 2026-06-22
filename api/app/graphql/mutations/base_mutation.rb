@@ -42,6 +42,11 @@ module Mutations
       MenuPreset.where(station: current_user.stations).find_by(id:) || not_found!("Preset")
     end
 
+    def find_owned_base!(id)
+      require_auth!
+      ::Base.where(station: current_user.stations).find_by(id:) || not_found!("Base")
+    end
+
     def find_owned_session!(id)
       require_auth!
       Session.where(station: current_user.stations).find_by(id:) || not_found!("Session")

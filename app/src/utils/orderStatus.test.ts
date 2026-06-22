@@ -22,8 +22,7 @@ describe('orderStatusMessage', () => {
     expect(orderStatusMessage({ status: 'IN_PROGRESS', queuePosition: 3 })).toBe('Your order is being made…')
   })
 
-  it('announces ready and picked up', () => {
+  it('announces ready', () => {
     expect(orderStatusMessage({ status: 'READY', queuePosition: null })).toContain('ready')
-    expect(orderStatusMessage({ status: 'PICKED_UP', queuePosition: null })).toContain('Enjoy')
   })
 })

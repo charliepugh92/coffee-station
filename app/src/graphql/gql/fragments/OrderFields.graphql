@@ -8,7 +8,7 @@ fragment OrderFields on Order {
   createdAt
   stationName
   canReorder
-  baseOption {
+  base {
     id
     name
   }

@@ -5,6 +5,7 @@ module Types
     class StationType < BaseObject
       description "A coffee station owned by a host — holds a durable, reusable menu"
 
+      field :bases, [ BaseType ], null: false, description: "Base drinks, ordered"
       field :created_at, GraphQL::Types::ISO8601DateTime, null: false, description: "When the station was created"
       field :customization_categories, [ CustomizationCategoryType ], null: false, description: "Menu categories, ordered"
       field :description, String, null: true, description: "Optional blurb shown to guests"

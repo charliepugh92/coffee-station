@@ -21,7 +21,7 @@ module Mutations
         order = session.orders.create!(
           guest_name: prior.guest_name,
           notes: prior.notes,
-          base_option_id: prior.base_option_id,
+          base_id: prior.base_id,
           menu_preset_id: prior.menu_preset_id
         )
         order.customization_option_ids = prior.customization_option_ids

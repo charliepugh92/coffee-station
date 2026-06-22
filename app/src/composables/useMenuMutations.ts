@@ -7,6 +7,9 @@ import UploadOptionImageDocument from '@/graphql/gql/menu/mutations/UploadOption
 import UpsertPresetDocument from '@/graphql/gql/menu/mutations/UpsertPreset.graphql'
 import UploadPresetImageDocument from '@/graphql/gql/menu/mutations/UploadPresetImage.graphql'
 import DeletePresetDocument from '@/graphql/gql/menu/mutations/DeletePreset.graphql'
+import UpsertBaseDocument from '@/graphql/gql/menu/mutations/UpsertBase.graphql'
+import UploadBaseImageDocument from '@/graphql/gql/menu/mutations/UploadBaseImage.graphql'
+import DeleteBaseDocument from '@/graphql/gql/menu/mutations/DeleteBase.graphql'
 import type {
   UpsertCategoryMutation, UpsertCategoryMutationVariables,
   DeleteCategoryMutation, DeleteCategoryMutationVariables,
@@ -16,6 +19,9 @@ import type {
   UpsertPresetMutation, UpsertPresetMutationVariables,
   UploadPresetImageMutation, UploadPresetImageMutationVariables,
   DeletePresetMutation, DeletePresetMutationVariables,
+  UpsertBaseMutation, UpsertBaseMutationVariables,
+  UploadBaseImageMutation, UploadBaseImageMutationVariables,
+  DeleteBaseMutation, DeleteBaseMutationVariables,
 } from '@/graphql/generated/types'
 
 // Thin typed wrappers around the menu mutations. Each resolves once the server
@@ -38,5 +44,11 @@ export function useMenuMutations() {
       apolloClient.mutate<UploadPresetImageMutation, UploadPresetImageMutationVariables>({ mutation: UploadPresetImageDocument, variables }),
     deletePreset: (variables: DeletePresetMutationVariables) =>
       apolloClient.mutate<DeletePresetMutation, DeletePresetMutationVariables>({ mutation: DeletePresetDocument, variables }),
+    upsertBase: (variables: UpsertBaseMutationVariables) =>
+      apolloClient.mutate<UpsertBaseMutation, UpsertBaseMutationVariables>({ mutation: UpsertBaseDocument, variables }),
+    uploadBaseImage: (variables: UploadBaseImageMutationVariables) =>
+      apolloClient.mutate<UploadBaseImageMutation, UploadBaseImageMutationVariables>({ mutation: UploadBaseImageDocument, variables }),
+    deleteBase: (variables: DeleteBaseMutationVariables) =>
+      apolloClient.mutate<DeleteBaseMutation, DeleteBaseMutationVariables>({ mutation: DeleteBaseDocument, variables }),
   }
 }

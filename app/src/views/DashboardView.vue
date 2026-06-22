@@ -60,12 +60,26 @@ async function logout() {
       <h2 class="font-display text-2xl">
         {{ auth.user?.displayName }}'s stations
       </h2>
-      <button
-        class="text-sm text-muted hover:text-ink"
-        @click="logout"
-      >
-        Sign out
-      </button>
+      <div class="flex items-center gap-4">
+        <RouterLink
+          to="/orders"
+          class="text-sm text-muted hover:text-ink"
+        >
+          Order history
+        </RouterLink>
+        <RouterLink
+          to="/account"
+          class="text-sm text-muted hover:text-ink"
+        >
+          Account
+        </RouterLink>
+        <button
+          class="text-sm text-muted hover:text-ink"
+          @click="logout"
+        >
+          Sign out
+        </button>
+      </div>
     </div>
 
     <form

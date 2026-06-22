@@ -14,7 +14,6 @@ export interface OrderLike {
 // back reads the ordinal position; ready/picked up read their own message.
 export function orderStatusMessage(order: OrderLike): string {
   if (order.status === 'READY') return "Your coffee's ready!"
-  if (order.status === 'PICKED_UP') return 'Enjoy your coffee!'
   if (order.status === 'IN_PROGRESS' || order.queuePosition === 1) return 'Your order is being made…'
   if (order.queuePosition) return `${ordinal(order.queuePosition)} in the queue`
   return 'Working on it…'
@@ -27,7 +26,6 @@ const PILL_CLASS: Record<string, string> = {
   PENDING: 'bg-sunken text-muted',
   IN_PROGRESS: 'bg-accent-tint text-roast',
   READY: 'bg-success-tint text-success',
-  PICKED_UP: 'bg-picked-up text-muted',
 }
 
 export function statusPillClass(status: string): string {

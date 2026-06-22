@@ -14,5 +14,14 @@ module Schemas
         context[:current_user]
       end
     end
+
+    module Mutations
+      include Types::Interfaces::BaseInterface
+      description "Current-user mutations"
+      graphql_name "UserMutations"
+
+      field :update_account, mutation: ::Mutations::Users::UpdateAccount,
+        description: "Update the current host's email, display name and/or password"
+    end
   end
 end

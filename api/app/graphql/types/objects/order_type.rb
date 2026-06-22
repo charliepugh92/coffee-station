@@ -5,7 +5,7 @@ module Types
     class OrderType < BaseObject
       description "A guest's coffee order"
 
-      field :base_option, CustomizationOptionType, null: true, description: "The chosen base drink, if any"
+      field :base, BaseType, null: true, description: "The chosen base drink, if any"
       field :can_reorder, Boolean, null: false,
         description: "Whether the order's station is currently open, so it can be reordered"
       field :comments, [ CommentType ], null: false, description: "Guest comments on this order"
@@ -20,6 +20,7 @@ module Types
       field :rating, RatingType, null: true, description: "The guest's rating, once left"
       field :selections, [ CustomizationOptionType ], null: false,
         description: "Chosen customization options", method: :customization_options
+      field :station_id, ID, null: false, description: "ID of the station this order was placed at"
       field :station_name, String, null: false, description: "Name of the station this order was placed at"
       field :status, Types::Enums::OrderStatusEnum, null: false, description: "Lifecycle status"
 
@@ -29,6 +30,10 @@ module Types
 
       def can_reorder
         object.session.station.open_session.present?
+      end
+
+      def station_id
+        object.station.id
       end
 
       def station_name

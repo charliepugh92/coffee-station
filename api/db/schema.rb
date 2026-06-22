@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_21_202933) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_202933) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "base_categories", force: :cascade do |t|
+    t.bigint "base_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "customization_category_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["base_id", "customization_category_id"], name: "idx_base_categories_unique", unique: true
+    t.index ["base_id"], name: "index_base_categories_on_base_id"
+    t.index ["customization_category_id"], name: "index_base_categories_on_customization_category_id"
+  end
+
+  create_table "bases", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.bigint "station_id", null: false
+    t.integer "surcharge_cents"
+    t.datetime "updated_at", null: false
+    t.index ["station_id", "position"], name: "index_bases_on_station_id_and_position"
+    t.index ["station_id"], name: "index_bases_on_station_id"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -105,7 +127,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_202933) do
   end
 
   create_table "orders", force: :cascade do |t|
-    t.bigint "base_option_id"
+    t.bigint "base_id"
     t.datetime "created_at", null: false
     t.string "guest_name", null: false
     t.string "guest_token", null: false
@@ -114,7 +136,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_202933) do
     t.bigint "session_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index ["base_option_id"], name: "index_orders_on_base_option_id"
+    t.index ["base_id"], name: "index_orders_on_base_id"
     t.index ["guest_token"], name: "index_orders_on_guest_token", unique: true
     t.index ["menu_preset_id"], name: "index_orders_on_menu_preset_id"
     t.index ["session_id", "status"], name: "index_orders_on_session_id_and_status"
@@ -170,6 +192,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_202933) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "base_categories", "bases", column: "base_id"
+  add_foreign_key "base_categories", "customization_categories"
+  add_foreign_key "bases", "stations"
   add_foreign_key "comments", "orders"
   add_foreign_key "customization_categories", "stations"
   add_foreign_key "customization_options", "customization_categories"
@@ -178,7 +203,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_202933) do
   add_foreign_key "menu_presets", "stations"
   add_foreign_key "order_selections", "customization_options"
   add_foreign_key "order_selections", "orders"
-  add_foreign_key "orders", "customization_options", column: "base_option_id"
+  add_foreign_key "orders", "bases", column: "base_id"
   add_foreign_key "orders", "menu_presets"
   add_foreign_key "orders", "sessions"
   add_foreign_key "ratings", "orders"

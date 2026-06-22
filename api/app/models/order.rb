@@ -1,6 +1,6 @@
 class Order < ApplicationRecord
   belongs_to :session
-  belongs_to :base_option, class_name: "CustomizationOption", optional: true
+  belongs_to :base, optional: true
   belongs_to :menu_preset, optional: true
   has_one_attached :completion_photo
   has_many :order_selections, dependent: :destroy
@@ -10,7 +10,7 @@ class Order < ApplicationRecord
 
   has_secure_token :guest_token
 
-  enum :status, { pending: 0, in_progress: 1, ready: 2, picked_up: 3 }
+  enum :status, { pending: 0, in_progress: 1, ready: 2 }
 
   delegate :station, to: :session
 
@@ -20,7 +20,7 @@ class Order < ApplicationRecord
   ACTIVE_STATUSES = %w[pending in_progress].freeze
 
   # 1-based position among the session's un-finished orders (oldest first), or
-  # nil once the order is ready/picked up.
+  # nil once the order is ready.
   def queue_position
     return nil unless ACTIVE_STATUSES.include?(status)
 

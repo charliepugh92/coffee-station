@@ -39,6 +39,67 @@ RSpec.describe "Orders", type: :graphql do
     end
   end
 
+  describe "createOrder with a base" do
+    let(:base) { create(:base, station:) }
+    let(:bq) do
+      "mutation($t: String!, $a: OrderInput!) { createOrder(input: { sessionToken: $t, attrs: $a }) " \
+        "{ order { selections { id } base { id } } errors } }"
+    end
+
+    it "keeps only options from categories the base enables", :aggregate_failures do
+      on = create(:customization_option, customization_category: create(:customization_category, station:).tap { |c| base.customization_categories << c })
+      off = create(:customization_option, customization_category: create(:customization_category, station:))
+      result = execute_query(bq, variables: { "t" => session.share_token, "a" => { "guestName" => "Sam", "baseId" => base.id, "optionIds" => [ on.id, off.id ] } }, context: {})
+      expect(gql_data(result, "createOrder", "order", "selections").map { |o| o["id"] }).to eq([ on.id.to_s ])
+      expect(gql_data(result, "createOrder", "order", "base", "id")).to eq(base.id.to_s)
+    end
+  end
+
+  describe "deleteOrder (host)" do
+    let(:q) { "mutation($id: ID!) { deleteOrder(input: { orderId: $id }) { success errors } }" }
+    let(:order) do
+      create(:order, session:).tap do |o|
+        o.completion_photo.attach(io: File.open(Rails.root.join("spec/fixtures/files/test_image.png")),
+          filename: "done.png", content_type: "image/png")
+      end
+    end
+
+    it "deletes the order and removes its photo attachment", :aggregate_failures do
+      result = execute_query(q, variables: { "id" => order.id }, context: auth_context(user))
+      expect(gql_data(result, "deleteOrder", "success")).to be(true)
+      expect(Order.exists?(order.id)).to be(false)
+      expect(ActiveStorage::Attachment.where(record_type: "Order", record_id: order.id)).to be_empty
+    end
+
+    it "refuses to delete another host's order" do
+      result = execute_query(q, variables: { "id" => create(:order).id }, context: auth_context(user))
+      expect(gql_errors(result).first["message"]).to eq("Order not found")
+    end
+  end
+
+  describe "orderHistory (host)" do
+    let(:q) { "query($s: ID) { orderHistory(stationId: $s) { id stationId } }" }
+    let!(:mine) { create(:order, session:) }
+
+    before { create(:order) } # another host's order, never visible
+
+    it "returns the host's orders across all their stations" do
+      elsewhere = create(:order, session: create(:session, station: create(:station, user:)))
+      result = execute_query(q, variables: {}, context: auth_context(user))
+      expect(gql_data(result, "orderHistory").map { |o| o["id"] }).to contain_exactly(mine.id.to_s, elsewhere.id.to_s)
+    end
+
+    it "filters by station" do
+      result = execute_query(q, variables: { "s" => station.id }, context: auth_context(user))
+      expect(gql_data(result, "orderHistory").map { |o| o["id"] }).to eq([ mine.id.to_s ])
+    end
+
+    it "returns nothing when unauthenticated" do
+      result = execute_query(q, variables: {}, context: {})
+      expect(gql_data(result, "orderHistory")).to eq([])
+    end
+  end
+
   describe "orderByToken (public)" do
     it "never exposes the guest token as a readable field" do
       result = execute_query("query($t: String!) { orderByToken(token: $t) { guestToken } }",

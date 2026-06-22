@@ -8,6 +8,7 @@ module Schemas
   class MutationType < Types::Objects::BaseObject
     description "Root mutation type"
 
+    implements Schemas::Users::Mutations
     implements Schemas::Stations::Mutations
     implements Schemas::Menu::Mutations
     implements Schemas::Sessions::Mutations

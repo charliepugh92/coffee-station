@@ -1,0 +1,8 @@
+#import "../../fragments/OrderFields.graphql"
+
+query OrderHistory($stationId: ID, $limit: Int, $offset: Int) {
+  orderHistory(stationId: $stationId, limit: $limit, offset: $offset) {
+    ...OrderFields
+    stationId
+  }
+}

@@ -5,7 +5,7 @@ module Types
     class OrderInput < BaseInputObject
       description "The contents of a guest's order"
 
-      argument :base_option_id, ID, required: false, description: "Chosen base drink option"
+      argument :base_id, ID, required: false, description: "Chosen base drink"
       argument :guest_name, String, required: true, description: "Name to call out when ready"
       argument :menu_preset_id, ID, required: false, description: "A curated preset, if picked"
       argument :notes, String, required: false, description: "Free-text notes for the barista"

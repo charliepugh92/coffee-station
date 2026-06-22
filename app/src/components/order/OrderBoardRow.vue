@@ -3,11 +3,14 @@ import { ref } from 'vue'
 import { apolloClient } from '@/utils/apolloClient'
 import UpdateOrderStatusDocument from '@/graphql/gql/orders/mutations/UpdateOrderStatus.graphql'
 import CompleteOrderDocument from '@/graphql/gql/orders/mutations/CompleteOrder.graphql'
+import DeleteOrderDocument from '@/graphql/gql/orders/mutations/DeleteOrder.graphql'
 import type {
   UpdateOrderStatusMutation,
   UpdateOrderStatusMutationVariables,
   CompleteOrderMutation,
   CompleteOrderMutationVariables,
+  DeleteOrderMutation,
+  DeleteOrderMutationVariables,
   OrderStatusEnum,
 } from '@/graphql/generated/types'
 import { statusPillClass, statusPillLabel } from '@/utils/orderStatus'
@@ -28,11 +31,11 @@ interface BoardOrder {
 const props = defineProps<{ order: BoardOrder }>()
 const emit = defineEmits<{ changed: [] }>()
 
-// PENDING → start, READY → picked up are plain status bumps. IN_PROGRESS →
-// ready goes through completeOrder so a photo is captured.
+// PENDING → start is a plain status bump. IN_PROGRESS → ready goes through
+// completeOrder so a photo is captured; READY is terminal (the order then drops
+// off the board into the host's order history).
 const NEXT: Record<string, { status: OrderStatusEnum; label: string } | undefined> = {
   PENDING: { status: 'IN_PROGRESS', label: 'Start' },
-  READY: { status: 'PICKED_UP', label: 'Picked up' },
 }
 
 async function advance() {
@@ -41,6 +44,15 @@ async function advance() {
   await apolloClient.mutate<UpdateOrderStatusMutation, UpdateOrderStatusMutationVariables>({
     mutation: UpdateOrderStatusDocument,
     variables: { orderId: props.order.id, status: next.status },
+  })
+  emit('changed')
+}
+
+async function remove() {
+  if (!window.confirm(`Delete ${props.order.guestName}'s order? This can't be undone.`)) return
+  await apolloClient.mutate<DeleteOrderMutation, DeleteOrderMutationVariables>({
+    mutation: DeleteOrderDocument,
+    variables: { orderId: props.order.id },
   })
   emit('changed')
 }
@@ -176,6 +188,13 @@ function cancelPreview() {
         @click="advance"
       >
         {{ NEXT[order.status]?.label }}
+      </button>
+      <button
+        class="text-xs text-muted hover:text-error"
+        aria-label="Delete order"
+        @click="remove"
+      >
+        Delete
       </button>
     </div>
   </div>

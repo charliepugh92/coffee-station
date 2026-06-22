@@ -11,10 +11,10 @@ const name = ref('')
 const description = ref('')
 const selected = ref<string[]>([])
 
-const allOptions = computed(() =>
-  props.station.customizationCategories.flatMap((c) =>
-    c.options.map((o) => ({ id: o.id, label: `${c.name}: ${o.name}` })),
-  ),
+// Categories that have at least one option, so the host can pick which choices
+// the preset locks in. A category left fully unchecked stays "User Choice".
+const categoriesWithOptions = computed(() =>
+  props.station.customizationCategories.filter((c) => c.options.length > 0),
 )
 
 async function addPreset() {
@@ -109,21 +109,34 @@ async function onImage(presetId: string, event: Event) {
         placeholder="Description (optional)"
         class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
-      <div class="flex flex-wrap gap-x-3 gap-y-2">
-        <label
-          v-for="opt in allOptions"
-          :key="opt.id"
-          class="flex items-center gap-1.5 text-xs text-ink"
-        >
-          <input
-            v-model="selected"
-            type="checkbox"
-            :value="opt.id"
-            class="accent-roast"
-          >{{ opt.label }}
-        </label>
+      <p class="text-xs text-muted">
+        Check the choices this preset locks in. Any category you leave unchecked
+        stays <span class="font-semibold">User Choice</span> for the guest.
+      </p>
+      <div
+        v-for="cat in categoriesWithOptions"
+        :key="cat.id"
+        class="space-y-1"
+      >
+        <div class="text-xs font-semibold text-ink">
+          {{ cat.name }}
+        </div>
+        <div class="flex flex-wrap gap-x-3 gap-y-2">
+          <label
+            v-for="o in cat.options"
+            :key="o.id"
+            class="flex items-center gap-1.5 text-xs text-ink"
+          >
+            <input
+              v-model="selected"
+              type="checkbox"
+              :value="o.id"
+              class="accent-roast"
+            >{{ o.name }}
+          </label>
+        </div>
       </div>
-      <button class="rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]">
+      <button class="w-full rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99] sm:w-auto">
         Add preset
       </button>
     </form>

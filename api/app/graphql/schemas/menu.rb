@@ -7,6 +7,8 @@ module Schemas
       description "Menu-building mutations (categories, options, presets)"
       graphql_name "MenuMutations"
 
+      field :delete_base, mutation: ::Mutations::Menu::DeleteBase,
+        description: "Delete a base drink"
       field :delete_category, mutation: ::Mutations::Menu::DeleteCategory,
         description: "Delete a customization category"
       field :delete_option, mutation: ::Mutations::Menu::DeleteOption,
@@ -15,10 +17,14 @@ module Schemas
         description: "Delete a menu preset"
       field :reorder_categories, mutation: ::Mutations::Menu::ReorderCategories,
         description: "Reorder a station's categories"
+      field :upload_base_image, mutation: ::Mutations::Menu::UploadBaseImage,
+        description: "Attach an image to a base drink"
       field :upload_option_image, mutation: ::Mutations::Menu::UploadOptionImage,
         description: "Attach an image to an option"
       field :upload_preset_image, mutation: ::Mutations::Menu::UploadPresetImage,
         description: "Attach an image to a preset"
+      field :upsert_base, mutation: ::Mutations::Menu::UpsertBase,
+        description: "Create or update a base drink"
       field :upsert_category, mutation: ::Mutations::Menu::UpsertCategory,
         description: "Create or update a category"
       field :upsert_option, mutation: ::Mutations::Menu::UpsertOption,

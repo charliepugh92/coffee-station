@@ -26,6 +26,12 @@ const { onResult: onOrderAdded } = useSubscription<OrderAddedSubscription, Order
 )
 // TODO(style §8): flash the new row's bg-accent-tint for 200ms before settling.
 onOrderAdded(() => refetch())
+
+// The board is the live make-line: only orders still being worked. Once an order
+// is completed (READY) it leaves the queue and lives in the host's order history.
+const activeOrders = computed(
+  () => result.value?.station?.openSession?.orders.filter((o) => o.status !== 'READY') ?? [],
+)
 </script>
 
 <template>
@@ -55,13 +61,13 @@ onOrderAdded(() => refetch())
       class="mt-4 space-y-2"
     >
       <p
-        v-if="!result.station.openSession.orders.length"
+        v-if="!activeOrders.length"
         class="text-sm text-muted"
       >
         No orders yet.
       </p>
       <OrderBoardRow
-        v-for="o in result.station.openSession.orders"
+        v-for="o in activeOrders"
         :key="o.id"
         :order="o"
         @changed="refetch"

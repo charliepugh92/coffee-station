@@ -93,4 +93,35 @@ RSpec.describe "Menu building", type: :graphql do
       expect(gql_data(result, "deletePreset", "success")).to be(true)
     end
   end
+
+  describe "bases" do
+    let(:upsert) { "mutation($s: ID!, $id: ID, $a: BaseAttrsInput!, $cids: [ID!]) { upsertBase(input: { stationId: $s, id: $id, attrs: $a, categoryIds: $cids }) { base { id name surchargeCents categories { id } } errors } }" }
+    let(:mine) { create(:customization_category, station:) }
+
+    it "creates a base enabling only this station's categories", :aggregate_failures do
+      result = run(upsert, { "s" => station.id, "a" => { "name" => "Latte", "surchargeCents" => 50 }, "cids" => [ mine.id, create(:customization_category).id ] })
+      expect(gql_data(result, "upsertBase", "base", "surchargeCents")).to eq(50)
+      expect(gql_data(result, "upsertBase", "base", "categories").map { |c| c["id"] }).to eq([ mine.id.to_s ])
+    end
+
+    it "updates a base's enabled categories" do
+      base = create(:base, station:)
+      cat = create(:customization_category, station:)
+      result = run(upsert, { "s" => station.id, "id" => base.id, "a" => { "name" => "Cappuccino" }, "cids" => [ cat.id ] })
+      expect(gql_data(result, "upsertBase", "base", "categories").map { |c| c["id"] }).to eq([ cat.id.to_s ])
+    end
+
+    it "attaches a base image" do
+      base = create(:base, station:)
+      q = "mutation($id: ID!, $f: Upload!) { uploadBaseImage(input: { baseId: $id, file: $f }) { base { imageUrl } } }"
+      result = run(q, { "id" => base.id, "f" => upload_file })
+      expect(gql_data(result, "uploadBaseImage", "base", "imageUrl")).to include("/rails/active_storage/")
+    end
+
+    it "deletes a base" do
+      base = create(:base, station:)
+      result = run("mutation($id: ID!) { deleteBase(input: { id: $id }) { success } }", { "id" => base.id })
+      expect(gql_data(result, "deleteBase", "success")).to be(true)
+    end
+  end
 end

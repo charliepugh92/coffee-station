@@ -1,0 +1,10 @@
+#import "../../fragments/BaseFields.graphql"
+
+mutation UploadBaseImage($baseId: ID!, $file: Upload!) {
+  uploadBaseImage(input: { baseId: $baseId, file: $file }) {
+    base {
+      ...BaseFields
+    }
+    errors
+  }
+}

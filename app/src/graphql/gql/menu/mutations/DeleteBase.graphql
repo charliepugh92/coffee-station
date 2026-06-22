@@ -1,0 +1,6 @@
+mutation DeleteBase($id: ID!) {
+  deleteBase(input: { id: $id }) {
+    success
+    errors
+  }
+}

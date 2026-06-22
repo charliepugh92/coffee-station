@@ -7,6 +7,7 @@ import StationDocument from '@/graphql/gql/stations/queries/Station.graphql'
 import type { StationQuery, StationQueryVariables, SelectionModeEnum } from '@/graphql/generated/types'
 import CategoryCard from '@/components/menu/CategoryCard.vue'
 import PresetSection from '@/components/menu/PresetSection.vue'
+import BaseSection from '@/components/menu/BaseSection.vue'
 import SessionControl from '@/components/menu/SessionControl.vue'
 
 const route = useRoute()
@@ -68,18 +69,18 @@ async function addCategory() {
     />
 
     <form
-      class="mt-4 flex flex-wrap items-center gap-2"
+      class="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center"
       @submit.prevent="addCategory"
     >
       <input
         v-model="catName"
         placeholder="New category (e.g. Milk)"
-        class="flex-1 rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
+        class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none sm:flex-1"
       >
-      <div class="relative">
+      <div class="relative w-full sm:w-auto">
         <select
           v-model="catMode"
-          class="appearance-none rounded-md border-[0.5px] border-border bg-card px-3 py-2 pr-9 text-sm text-ink focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
+          class="w-full appearance-none rounded-md border-[0.5px] border-border bg-card px-3 py-2 pr-9 text-sm text-ink focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none sm:w-auto"
         >
           <option value="SINGLE">
             single
@@ -100,7 +101,7 @@ async function addCategory() {
           class="accent-roast"
         >required
       </label>
-      <button class="rounded-lg bg-roast px-4 py-2 text-base font-semibold text-surface hover:bg-roast/90 active:scale-[.99]">
+      <button class="w-full rounded-lg bg-roast px-4 py-2 text-base font-semibold text-surface hover:bg-roast/90 active:scale-[.99] sm:w-auto">
         Add
       </button>
     </form>
@@ -113,6 +114,12 @@ async function addCategory() {
         @changed="refetch"
       />
     </div>
+
+    <BaseSection
+      class="mt-8"
+      :station="result.station"
+      @changed="refetch"
+    />
 
     <PresetSection
       class="mt-8"

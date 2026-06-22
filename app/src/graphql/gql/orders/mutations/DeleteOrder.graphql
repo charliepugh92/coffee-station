@@ -1,0 +1,6 @@
+mutation DeleteOrder($orderId: ID!) {
+  deleteOrder(input: { orderId: $orderId }) {
+    success
+    errors
+  }
+}

@@ -1,5 +1,6 @@
 #import "../../fragments/CategoryFields.graphql"
 #import "../../fragments/PresetFields.graphql"
+#import "../../fragments/BaseFields.graphql"
 
 query SessionByToken($token: String!) {
   sessionByToken(token: $token) {
@@ -13,6 +14,9 @@ query SessionByToken($token: String!) {
       }
       menuPresets {
         ...PresetFields
+      }
+      bases {
+        ...BaseFields
       }
     }
   }

@@ -19,4 +19,9 @@ FactoryBot.define do
     association :station
     sequence(:name) { |n| "Preset #{n}" }
   end
+
+  factory :base do
+    association :station
+    sequence(:name) { |n| "Base #{n}" }
+  end
 end

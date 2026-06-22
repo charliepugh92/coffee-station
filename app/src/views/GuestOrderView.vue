@@ -77,6 +77,7 @@ function onPlaced(orderToken: string, orderId: string, guestName: string) {
         :session-token="token"
         :categories="result.sessionByToken.station.customizationCategories"
         :presets="result.sessionByToken.station.menuPresets"
+        :bases="result.sessionByToken.station.bases"
         :default-name="guest.lastName"
         @placed="onPlaced"
       />

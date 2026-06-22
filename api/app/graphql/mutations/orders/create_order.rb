@@ -19,13 +19,13 @@ module Mutations
         return error("This station is closed") unless session.accepting_orders?
 
         station = session.station
-        order = session.orders.build(guest_name: attrs.guest_name, notes: attrs.notes)
-        order.base_option = valid_option(station, attrs.base_option_id) if attrs.base_option_id
+        base = station.bases.find_by(id: attrs.base_id) if attrs.base_id
+        order = session.orders.build(guest_name: attrs.guest_name, notes: attrs.notes, base:)
         order.menu_preset = station.menu_presets.find_by(id: attrs.menu_preset_id) if attrs.menu_preset_id
 
         return error(order.errors.full_messages) unless order.save
 
-        order.customization_option_ids = sanitize_options(station, attrs.option_ids) if attrs.option_ids
+        order.customization_option_ids = sanitize_options(station, attrs.option_ids, base) if attrs.option_ids
         trigger_order_added(order)
         { order:, guest_token: order.guest_token, errors: [] }
       end
@@ -36,16 +36,15 @@ module Mutations
         { order: nil, guest_token: nil, errors: Array(messages) }
       end
 
-      def station_option_ids(station)
-        CustomizationOption.where(customization_category_id: station.customization_categories.select(:id)).ids
+      # Options the order may include: scoped to the categories enabled by the
+      # chosen base, or the station's whole menu when no base was picked.
+      def station_option_ids(station, base = nil)
+        categories = base ? base.customization_categories : station.customization_categories
+        CustomizationOption.where(customization_category_id: categories.select(:id)).ids
       end
 
-      def sanitize_options(station, ids)
-        ids.map(&:to_i) & station_option_ids(station)
-      end
-
-      def valid_option(station, id)
-        CustomizationOption.where(id: station_option_ids(station)).find_by(id:)
+      def sanitize_options(station, ids, base = nil)
+        ids.map(&:to_i) & station_option_ids(station, base)
       end
     end
   end

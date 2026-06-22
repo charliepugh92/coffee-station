@@ -1,0 +1,10 @@
+#import "../../fragments/BaseFields.graphql"
+
+mutation UpsertBase($stationId: ID!, $id: ID, $attrs: BaseAttrsInput!, $categoryIds: [ID!]) {
+  upsertBase(input: { stationId: $stationId, id: $id, attrs: $attrs, categoryIds: $categoryIds }) {
+    base {
+      ...BaseFields
+    }
+    errors
+  }
+}

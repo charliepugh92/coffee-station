@@ -30,6 +30,18 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/account',
+      name: 'account',
+      component: () => import('@/views/AccountView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/orders',
+      name: 'order-history',
+      component: () => import('@/views/OrderHistoryView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/stations/:id',
       name: 'station-edit',
       component: () => import('@/views/StationEditView.vue'),

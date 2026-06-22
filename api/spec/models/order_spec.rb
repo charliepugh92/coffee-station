@@ -2,11 +2,11 @@ require "rails_helper"
 
 RSpec.describe Order, type: :model do
   it { is_expected.to belong_to(:session) }
-  it { is_expected.to belong_to(:base_option).class_name("CustomizationOption").optional }
+  it { is_expected.to belong_to(:base).optional }
   it { is_expected.to belong_to(:menu_preset).optional }
   it { is_expected.to have_many(:order_selections).dependent(:destroy) }
   it { is_expected.to validate_presence_of(:guest_name) }
-  it { is_expected.to define_enum_for(:status).with_values(pending: 0, in_progress: 1, ready: 2, picked_up: 3) }
+  it { is_expected.to define_enum_for(:status).with_values(pending: 0, in_progress: 1, ready: 2) }
 
   it "mints a guest token on create" do
     expect(create(:order).guest_token).to be_present

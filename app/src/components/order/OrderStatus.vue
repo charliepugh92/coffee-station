@@ -55,7 +55,7 @@ const message = computed(() => (order.value ? orderStatusMessage(order.value) : 
       class="mx-auto mt-4 max-h-56 rounded-lg object-cover"
     >
     <OrderFeedback
-      v-if="order && (order.status === 'READY' || order.status === 'PICKED_UP')"
+      v-if="order && order.status === 'READY'"
       :token="token"
       :stars="order.rating?.stars"
       @changed="refetch"

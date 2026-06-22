@@ -102,21 +102,21 @@ async function removeCategory() {
       </li>
     </ul>
     <form
-      class="mt-3 flex gap-2"
+      class="mt-3 flex flex-wrap gap-2"
       @submit.prevent="addOption"
     >
       <input
         v-model="optionName"
         placeholder="Add option"
-        class="flex-1 rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
+        class="min-w-0 flex-1 rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
       <input
         v-model="surcharge"
         type="number"
         placeholder="¢"
-        class="w-16 rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
+        class="w-16 shrink-0 rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
-      <button class="rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]">
+      <button class="shrink-0 rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]">
         Add
       </button>
     </form>

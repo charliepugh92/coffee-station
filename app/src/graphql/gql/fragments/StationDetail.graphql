@@ -1,5 +1,6 @@
 #import "./CategoryFields.graphql"
 #import "./PresetFields.graphql"
+#import "./BaseFields.graphql"
 
 fragment StationDetail on Station {
   id
@@ -16,5 +17,8 @@ fragment StationDetail on Station {
   }
   menuPresets {
     ...PresetFields
+  }
+  bases {
+    ...BaseFields
   }
 }

@@ -1,0 +1,11 @@
+fragment BaseFields on Base {
+  id
+  name
+  description
+  position
+  surchargeCents
+  imageUrl
+  categories {
+    id
+  }
+}

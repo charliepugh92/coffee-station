@@ -1,0 +1,22 @@
+#import "../../fragments/UserFields.graphql"
+
+mutation UpdateAccount(
+  $email: String
+  $displayName: String
+  $password: String
+  $currentPassword: String!
+) {
+  updateAccount(
+    input: {
+      email: $email
+      displayName: $displayName
+      password: $password
+      currentPassword: $currentPassword
+    }
+  ) {
+    user {
+      ...UserFields
+    }
+    errors
+  }
+}
