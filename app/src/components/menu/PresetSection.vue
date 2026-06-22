@@ -45,31 +45,37 @@ async function onImage(presetId: string, event: Event) {
 
 <template>
   <div>
-    <h3 class="font-semibold">
+    <h3 class="font-display text-xl leading-tight">
       Curated presets
     </h3>
-    <ul class="mt-2 space-y-2">
+    <ul class="mt-3 space-y-2">
       <li
         v-for="p in station.menuPresets"
         :key="p.id"
-        class="flex items-center gap-3 rounded border border-stone-200 p-2"
+        class="flex items-center gap-3 rounded-lg border-[0.5px] border-border bg-card p-3"
       >
         <img
           v-if="p.imageUrl"
           :src="p.imageUrl"
           alt=""
-          class="h-10 w-10 rounded object-cover"
+          class="h-10 w-10 rounded-md object-cover"
         >
-        <div class="flex-1 text-sm">
-          <div class="font-medium">
+        <div class="flex-1 text-sm text-ink">
+          <div class="font-semibold">
             {{ p.name }}
           </div>
-          <div class="text-xs text-stone-400">
+          <div class="text-xs text-muted">
             {{ p.options.map((o) => o.name).join(', ') }}
           </div>
         </div>
-        <label class="cursor-pointer text-xs text-stone-500 hover:text-stone-800">
-          photo
+        <label
+          class="flex cursor-pointer items-center text-muted hover:text-ink"
+          aria-label="Add photo"
+        >
+          <i
+            class="ti ti-camera text-base"
+            aria-hidden="true"
+          />
           <input
             type="file"
             accept="image/*"
@@ -78,41 +84,46 @@ async function onImage(presetId: string, event: Event) {
           >
         </label>
         <button
-          class="text-xs text-red-400 hover:text-red-600"
+          class="text-base text-error hover:text-error/80"
+          aria-label="Remove preset"
           @click="removePreset(p.id)"
         >
-          ×
+          <i
+            class="ti ti-x"
+            aria-hidden="true"
+          />
         </button>
       </li>
     </ul>
     <form
-      class="mt-3 space-y-2 rounded border border-dashed border-stone-300 p-3"
+      class="mt-3 space-y-2 rounded-lg border border-dashed border-border p-4"
       @submit.prevent="addPreset"
     >
       <input
         v-model="name"
         placeholder="Preset name"
-        class="w-full rounded border border-stone-300 px-2 py-1 text-sm"
+        class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
       <input
         v-model="description"
         placeholder="Description (optional)"
-        class="w-full rounded border border-stone-300 px-2 py-1 text-sm"
+        class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-x-3 gap-y-2">
         <label
           v-for="opt in allOptions"
           :key="opt.id"
-          class="flex items-center gap-1 text-xs"
+          class="flex items-center gap-1.5 text-xs text-ink"
         >
           <input
             v-model="selected"
             type="checkbox"
             :value="opt.id"
+            class="accent-roast"
           >{{ opt.label }}
         </label>
       </div>
-      <button class="rounded bg-stone-700 px-3 py-1 text-xs text-white">
+      <button class="rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]">
         Add preset
       </button>
     </form>
