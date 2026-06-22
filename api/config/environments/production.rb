@@ -76,9 +76,13 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  # Allow requests to the Render-assigned host (and any custom domain).
+  # Allow requests to the Render-assigned host and our custom API domain. The
+  # custom domain (api.daveys.coffee) lives in credentials as api_host — Render's
+  # RENDER_EXTERNAL_HOSTNAME only ever holds the *.onrender.com name, so without
+  # this the host check blocks requests arriving on the custom domain.
   config.hosts << /.*\.onrender\.com/
   config.hosts << ENV["RENDER_EXTERNAL_HOSTNAME"] if ENV["RENDER_EXTERNAL_HOSTNAME"].present?
+  config.hosts << Rails.application.credentials.api_host if Rails.application.credentials.api_host.present?
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
