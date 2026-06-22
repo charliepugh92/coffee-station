@@ -18,8 +18,9 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files on Cloudflare R2 (S3-compatible) so images survive
+  # redeploys and instance spin-down (see config/storage.yml for the service).
+  config.active_storage.service = :cloudflare
 
   # Render terminates SSL at its proxy, so trust X-Forwarded-Proto.
   config.assume_ssl = true
@@ -83,5 +84,5 @@ Rails.application.configure do
 
   # Action Cable rejects cross-origin WebSocket handshakes unless the SPA origin
   # is whitelisted — without this, GraphQL subscriptions never connect in prod.
-  config.action_cable.allowed_request_origins = [ ENV["FRONTEND_URL"] ].compact
+  config.action_cable.allowed_request_origins = [ Rails.application.credentials.frontend_url ].compact
 end

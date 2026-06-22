@@ -1,6 +1,5 @@
 import { getToken } from '@/utils/tokenStorage'
-
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+import { API_URL } from '@/utils/env'
 
 export class ApiError extends Error {
   errors: string[]

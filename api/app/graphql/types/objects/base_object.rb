@@ -10,8 +10,10 @@ module Types
       private
 
       # Absolute URL for an Active Storage attachment, or nil if none is attached.
-      # API-only mode has no request to infer the host from, so pass it explicitly
-      # (API_HOST/API_PROTOCOL are set in production; localhost http in dev/test).
+      # API-only mode has no request to infer the host from, so pass it explicitly.
+      # The public host/protocol live in encrypted credentials (production.yml.enc);
+      # dev/test/CI have no such entry, so credentials return nil and we fall back to
+      # localhost http.
       def attachment_url(attachment)
         return nil unless attachment.attached?
 
@@ -19,11 +21,11 @@ module Types
       end
 
       def api_host
-        ENV.fetch("API_HOST", "localhost:3000")
+        Rails.application.credentials.api_host || "localhost:3000"
       end
 
       def api_protocol
-        ENV.fetch("API_PROTOCOL", "http")
+        Rails.application.credentials.api_protocol || "http"
       end
     end
   end

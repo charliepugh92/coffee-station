@@ -43,7 +43,7 @@ services:
       - key: RAILS_LOG_TO_STDOUT
         value: "true"
       - key: RAILS_MASTER_KEY
-        sync: false # paste the contents of api/config/master.key (optional — see DEPLOY.md)
+        sync: false # REQUIRED: paste the contents of api/config/credentials/production.key (decrypts frontend_url / api_host / api_protocol — see DEPLOY.md)
       - key: SECRET_KEY_BASE
         generateValue: true # generated once and kept stable, so issued JWTs stay valid
       - key: WEB_CONCURRENCY
@@ -57,17 +57,10 @@ services:
           type: keyvalue
           name: coffee-station-cable
           property: connectionString
-      - key: API_HOST # used to build absolute Active Storage image URLs
-        fromService:
-          type: web
-          name: coffee-station-api
-          property: host
-      - key: API_PROTOCOL
-        value: https
-      # Full origin of the SPA — used for CORS and the Action Cable origin check.
-      # Update this if Render appends a suffix to the static site's hostname.
-      - key: FRONTEND_URL
-        value: https://coffee-station-app.onrender.com
+      # frontend_url (CORS + Action Cable origin), api_host, and api_protocol
+      # (absolute Active Storage image URLs) now live in encrypted production
+      # credentials. Edit them with:
+      #   cd api && bin/rails credentials:edit --environment production
 
   # Vue SPA — built to static files and served from Render's CDN.
   - type: web
@@ -79,10 +72,9 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "22"
-      # Baked into the bundle at build time; the WebSocket URL is derived from it
-      # (https → wss). Update if Render appends a suffix to the API's hostname.
-      - key: VITE_API_URL
-        value: https://coffee-station-api.onrender.com
+      # VITE_API_URL is baked into the bundle at build time from app/.env.production
+      # (https://api.daveys.coffee); the WebSocket URL is derived from it (https → wss).
+      # Override here only if you need a different API host for this deploy.
     routes:
       # SPA fallback — let Vue Router handle client-side paths.
       - type: rewrite

@@ -4,10 +4,8 @@ import { createUploadLink } from 'apollo-upload-client'
 import { createConsumer } from '@rails/actioncable'
 import ActionCableLink from 'graphql-ruby-client/subscriptions/ActionCableLink'
 import { getToken } from '@/utils/tokenStorage'
+import { API_URL, WS_URL } from '@/utils/env'
 import fragmentTypes from '@/graphql/generated/fragment-types.json'
-
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
-const WS_URL = API_URL.replace(/^http/, 'ws')
 
 function getAuthHeaders(): Record<string, string> {
   const token = getToken()

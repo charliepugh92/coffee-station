@@ -6,13 +6,19 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-# Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
-# amazon:
-#   service: S3
-#   access_key_id: <%= Rails.application.credentials.dig(:aws, :access_key_id) %>
-#   secret_access_key: <%= Rails.application.credentials.dig(:aws, :secret_access_key) %>
-#   region: us-east-1
-#   bucket: your_own_bucket-<%= Rails.env %>
+# Cloudflare R2 (S3-compatible) — production image storage. The bucket stays
+# private; Active Storage serves attachments via short-lived signed URLs through
+# its redirect controller. Everything vendor-specific lives in encrypted
+# production credentials under r2: (account_id, bucket_name, access_key_id,
+# secret_access_key) — nothing R2-identifying is hard-coded here.
+#   cd api && bin/rails credentials:edit --environment production
+cloudflare:
+  service: S3
+  access_key_id: <%= Rails.application.credentials.dig(:r2, :access_key_id) %>
+  secret_access_key: <%= Rails.application.credentials.dig(:r2, :secret_access_key) %>
+  endpoint: https://<%= Rails.application.credentials.dig(:r2, :account_id) %>.r2.cloudflarestorage.com
+  bucket: <%= Rails.application.credentials.dig(:r2, :bucket_name) %>
+  region: auto
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:

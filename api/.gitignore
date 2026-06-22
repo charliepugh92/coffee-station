@@ -24,8 +24,12 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
+# Ignore per-environment credential keys (e.g. config/credentials/production.key).
+/config/credentials/*.key
+
 # Ignore SimpleCov coverage reports.
 /coverage
 
 # Ignore generated documentation.
 /.yardoc
+

@@ -1,5 +1,8 @@
 overwrite: true
-schema: "http://localhost:3000/graphql"
+# Introspect the running API. Defaults to the local dev server; set VITE_API_URL
+# in the shell to point codegen at another environment (graphql-config interpolates
+# ${VAR:default} from process.env).
+schema: "${VITE_API_URL:http://localhost:3000}/graphql"
 documents: src/graphql/gql/**/*.graphql
 # Shared config, reused by both the base-types and operations outputs.
 # enumsAsConst emits `const` objects + types instead of TS `enum`s, which the
