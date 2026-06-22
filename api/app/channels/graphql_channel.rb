@@ -19,7 +19,14 @@ class GraphqlChannel < ApplicationCable::Channel
       operation_name: data["operationName"]
     )
 
-    transmit({ result: result.to_h, more: result.subscription? })
+    # A subscription's initial reply carries no payload — the root field is
+    # skipped via `:no_response`, so it only registers the stream. graphql-ruby
+    # still renders that as `{ "data" => {} }`, and forwarding it makes Apollo's
+    # cache choke ("Missing field 'orderAdded' while writing result {}"). Only
+    # transmit frames that actually carry data or errors; updates (and any
+    # query/mutation replies) always do.
+    payload = result.to_h
+    transmit({ result: payload, more: result.subscription? }) if payload["data"].present? || payload["errors"].present?
     @subscription_ids << result.context[:subscription_id] if result.context[:subscription_id]
   end
 end

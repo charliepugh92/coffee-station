@@ -9,11 +9,14 @@ RSpec.describe GraphqlChannel, type: :channel do
     expect(transmissions.last["result"]["data"]["apiVersion"]).to eq("0.1.0")
   end
 
-  it "registers a subscription and tears it down on unsubscribe", :aggregate_failures do
+  it "registers a subscription without transmitting an empty initial frame", :aggregate_failures do
     session = create(:session)
     subscribe
     perform("execute", "query" => sub_query, "variables" => { "t" => session.share_token })
-    expect(transmissions.last["more"]).to be(true)
+    # The initial subscribe only registers the stream (`:no_response`); it carries
+    # no data, so nothing should be sent — forwarding `{ "data" => {} }` makes the
+    # Apollo client's cache choke.
+    expect(transmissions).to be_empty
     expect { unsubscribe }.not_to raise_error
   end
 end
