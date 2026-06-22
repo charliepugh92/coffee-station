@@ -1,8 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@500;600&family=Inter:wght@400;600&display=swap');
 @import "tailwindcss";
 
-/* Neutral baseline — a full visual style guide is deferred. */
+/*
+ * Davey's Coffee — design tokens
+ * See ../STYLE_GUIDE.md for the bible.
+ *
+ * Tailwind v4 surfaces every var below as a utility:
+ *   --color-roast  → bg-roast / text-roast / border-roast
+ *   --font-display → font-display
+ *   --radius-lg    → rounded-lg
+ */
+@theme {
+  --color-surface: #faf7f2;
+  --color-card: #ffffff;
+  --color-sunken: #f1eae0;
+  --color-ink: #2a2320;
+  --color-roast: #874a2c;
+  --color-caramel: #c9842f;
+  --color-muted: #8b8178;
+  --color-border: #e9e2d8;
+
+  --color-accent-tint: #f4e7d6;
+  --color-success: #3b6d2e;
+  --color-success-tint: #e4efdd;
+  --color-error: #b23a2e;
+  --color-error-tint: #f6e2de;
+  --color-picked-up: #ece7df;
+  --color-star-empty: #dcd3c8;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Anton', 'Inter', system-ui, sans-serif;
+  --font-accent: 'Caveat', 'Inter', cursive;
+
+  --radius-sm: 7px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
 html,
 body,
 #app {
   height: 100%;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: 'cv11', 'ss01';
 }
