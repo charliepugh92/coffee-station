@@ -67,7 +67,7 @@ async function submitComment() {
         placeholder="Leave a comment"
         class="flex-1 rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
-      <button class="rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]">
+      <button class="rounded-md border-[0.5px] border-border bg-card px-3 py-1.5 text-sm font-semibold text-ink hover:bg-sunken active:scale-[.99]">
         Send
       </button>
     </form>
