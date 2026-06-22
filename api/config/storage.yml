@@ -19,6 +19,13 @@ cloudflare:
   endpoint: https://<%= Rails.application.credentials.dig(:r2, :account_id) %>.r2.cloudflarestorage.com
   bucket: <%= Rails.application.credentials.dig(:r2, :bucket_name) %>
   region: auto
+  # aws-sdk-s3 >= 1.179 sends a CRC32 integrity checksum on every upload by
+  # default. R2 rejects requests carrying that alongside its own checksum
+  # ("You can only specify one non-default checksum at a time"), so restrict
+  # checksums to operations that actually require them. Active Storage forwards
+  # these keys straight to Aws::S3::Client.
+  request_checksum_calculation: when_required
+  response_checksum_validation: when_required
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:
