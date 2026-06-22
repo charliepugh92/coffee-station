@@ -216,6 +216,44 @@ tell apart "start the next order" from "capture the photo" mid-rush.
 
 Focus ring is `accent-tint` (4px halo), border becomes `roast`. Never `ring-blue-500`.
 
+### 6.4b Select
+
+Inherits §6.4 styling plus a chevron affordance, since the native arrow
+visually clashes with the kraft-paper aesthetic.
+
+```html
+<div class="relative">
+  <select class="w-full appearance-none rounded-md border-[0.5px] border-border
+                 bg-card px-3 py-2 pr-9 text-base text-ink
+                 focus:border-roast focus:ring-4 focus:ring-accent-tint
+                 focus:outline-none">
+    <option value="">— build my own —</option>
+    <option v-for="p in presets" :key="p.id" :value="p.id">{{ p.name }}</option>
+  </select>
+  <i class="ti ti-chevron-down pointer-events-none absolute right-3 top-1/2
+            -translate-y-1/2 text-muted" aria-hidden="true" />
+</div>
+```
+
+Use for: `OrderForm` preset picker, `StationEditView` SINGLE/MULTI mode.
+
+### 6.4c Checkbox & radio
+
+Stay native — no custom toggles — but tint the check with `accent-roast` so
+the brown checkmark matches the rest of the palette.
+
+```html
+<label class="flex items-center gap-2 text-sm text-ink">
+  <input type="checkbox" class="accent-roast" />
+  Required
+</label>
+```
+
+Use for: `CategorySelect` options (radio for single-choice, checkbox for
+multi), `StationEditView` "required" toggle, `PresetSection`
+option-composition grid. Label text stays Inter — never apply `font-display`
+to a control label (bible §4).
+
 ### 6.5 Order-status pill
 
 A 4-state badge driven by the order's `status`:
@@ -290,13 +328,37 @@ Never a generic "No data" — always something neighborly:
 - "No orders yet."
 - "This coffee link isn't valid."
 
+### 6.10 Destructive actions
+
+Bible §3 bans a second primary, so destructive surfaces must not compete
+with `bg-roast`. Use text-only `text-error`, with a tinted fill reserved
+for confirm banners.
+
+```html
+<!-- inline row action (delete option / preset / category) -->
+<button class="text-sm text-error hover:text-error/80">Remove</button>
+
+<!-- standalone destructive (Dashboard "Delete station") -->
+<button class="text-sm text-error hover:text-error/80">Delete</button>
+
+<!-- confirm banner / inline warning -->
+<p class="rounded-md bg-error-tint px-3 py-2 text-sm text-error">
+  This will remove the station and its menu. Type the name to confirm.
+</p>
+```
+
+Icon-only deletes use `ti-x` in the same `text-error` family with an
+`aria-label="Remove"`. Never reach for a filled red button; the brown CTA
+is the only filled affordance on any screen.
+
 ---
 
 ## 7. Iconography
 
-Use the **Tabler outline** set (already documented in the visualize widget
-guidance; pull via `@tabler/icons` if we adopt them as a webfont — open
-decision). Outline only — never filled glyphs. Sized to match the
+Use the **Tabler outline** set via the `@tabler/icons-webfont` package —
+imported once in `src/main.ts`, so any component can render an icon with
+`<i class="ti ti-NAME" />`. Outline only — never filled glyphs. Sized to
+match the
 adjacent text's cap height: 16px next to body text, 22px in icon badges.
 
 Hero glyphs we'll reach for repeatedly: `ti-coffee`, `ti-camera`, `ti-star`,
