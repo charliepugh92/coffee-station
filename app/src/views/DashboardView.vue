@@ -57,11 +57,11 @@ async function logout() {
 <template>
   <section class="mx-auto max-w-2xl">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold">
+      <h2 class="font-display text-2xl">
         {{ auth.user?.displayName }}'s stations
       </h2>
       <button
-        class="text-sm text-stone-500 hover:text-stone-800"
+        class="text-sm text-muted hover:text-ink"
         @click="logout"
       >
         Sign out
@@ -76,25 +76,25 @@ async function logout() {
         v-model="name"
         placeholder="New station name"
         required
-        class="flex-1 rounded border border-stone-300 px-3 py-2"
+        class="flex-1 rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
       <input
         v-model="slug"
         placeholder="slug (optional)"
-        class="w-40 rounded border border-stone-300 px-3 py-2"
+        class="w-40 rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
-      <button class="rounded bg-stone-800 px-4 py-2 text-white">
+      <button class="rounded-lg bg-roast px-4 py-2 text-base font-semibold text-surface hover:bg-roast/90 active:scale-[.99]">
         Create
       </button>
     </form>
     <p
       v-if="error"
-      class="mt-2 text-sm text-red-600"
+      class="mt-2 text-sm text-error"
     >
       {{ error }}
     </p>
 
-    <ul class="mt-6 divide-y divide-stone-200 border-y border-stone-200">
+    <ul class="mt-6 divide-y divide-border border-y border-border">
       <li
         v-for="s in result?.myStations ?? []"
         :key="s.id"
@@ -102,12 +102,12 @@ async function logout() {
       >
         <RouterLink
           :to="`/stations/${s.id}`"
-          class="font-medium text-stone-800 hover:underline"
+          class="font-display text-lg leading-tight hover:underline"
         >
           {{ s.name }}
         </RouterLink>
         <button
-          class="text-sm text-red-500 hover:text-red-700"
+          class="text-sm text-error hover:text-error/80"
           @click="remove(s.id)"
         >
           Delete
