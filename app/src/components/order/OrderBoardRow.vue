@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { apolloClient } from '@/utils/apolloClient'
 import UpdateOrderStatusDocument from '@/graphql/gql/orders/mutations/UpdateOrderStatus.graphql'
 import CompleteOrderDocument from '@/graphql/gql/orders/mutations/CompleteOrder.graphql'
@@ -10,6 +11,7 @@ import type {
   OrderStatusEnum,
 } from '@/graphql/generated/types'
 import { statusPillClass, statusPillLabel } from '@/utils/orderStatus'
+import PhotoConfirmModal from '@/components/order/PhotoConfirmModal.vue'
 
 interface BoardOrder {
   id: string
@@ -43,14 +45,61 @@ async function advance() {
   emit('changed')
 }
 
-async function complete(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0]
+// Marking ready captures a photo, then previews it for confirmation before the
+// upload fires. Confirming runs completeOrder; only on success do we close and
+// refetch, so a failed upload keeps the modal open instead of silently dropping
+// the photo and leaving the order stuck in IN_PROGRESS.
+const fileInput = ref<HTMLInputElement | null>(null)
+const previewFile = ref<File | null>(null)
+const previewUrl = ref('')
+const submitting = ref(false)
+const errorMsg = ref('')
+
+function clearPreview() {
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+  previewUrl.value = ''
+  previewFile.value = null
+  errorMsg.value = ''
+}
+
+function onCapture(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  // Reset so re-selecting the same file (e.g. after Retake) still fires @change.
+  input.value = ''
   if (!file) return
-  await apolloClient.mutate<CompleteOrderMutation, CompleteOrderMutationVariables>({
-    mutation: CompleteOrderDocument,
-    variables: { orderId: props.order.id, file },
-  })
-  emit('changed')
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+  previewFile.value = file
+  previewUrl.value = URL.createObjectURL(file)
+  errorMsg.value = ''
+}
+
+async function confirmComplete() {
+  if (!previewFile.value || submitting.value) return
+  submitting.value = true
+  errorMsg.value = ''
+  try {
+    await apolloClient.mutate<CompleteOrderMutation, CompleteOrderMutationVariables>({
+      mutation: CompleteOrderDocument,
+      variables: { orderId: props.order.id, file: previewFile.value },
+    })
+    clearPreview()
+    emit('changed')
+  } catch {
+    errorMsg.value = "Couldn't save the photo. Check your connection and try again."
+  } finally {
+    submitting.value = false
+  }
+}
+
+function retake() {
+  clearPreview()
+  fileInput.value?.click()
+}
+
+function cancelPreview() {
+  if (submitting.value) return
+  clearPreview()
 }
 </script>
 
@@ -113,11 +162,12 @@ async function complete(event: Event) {
           aria-hidden="true"
         />
         <input
+          ref="fileInput"
           type="file"
           accept="image/*"
           capture="environment"
           class="hidden"
-          @change="complete"
+          @change="onCapture"
         >
       </label>
       <button
@@ -129,4 +179,14 @@ async function complete(event: Event) {
       </button>
     </div>
   </div>
+
+  <PhotoConfirmModal
+    v-if="previewFile"
+    :preview-url="previewUrl"
+    :submitting="submitting"
+    :error-msg="errorMsg"
+    @confirm="confirmComplete"
+    @retake="retake"
+    @cancel="cancelPreview"
+  />
 </template>
