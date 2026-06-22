@@ -14,34 +14,36 @@ watch(multiVal, (v) => emit('change', [...v]), { deep: true })
 
 <template>
   <fieldset>
-    <legend class="text-sm font-medium text-stone-700">
+    <legend class="text-sm font-semibold text-ink">
       {{ category.name }}<span
         v-if="category.required"
-        class="text-red-500"
+        class="text-error"
       >*</span>
     </legend>
     <div class="mt-1 space-y-1">
       <label
         v-for="o in category.options"
         :key="o.id"
-        class="flex items-center gap-2 text-sm text-stone-600"
+        class="flex items-center gap-2 text-sm text-ink"
       >
         <input
           v-if="category.selectionMode === 'SINGLE'"
           v-model="singleVal"
           type="radio"
           :value="o.id"
+          class="accent-roast"
         >
         <input
           v-else
           v-model="multiVal"
           type="checkbox"
           :value="o.id"
+          class="accent-roast"
         >
         {{ o.name }}
         <span
           v-if="o.surchargeCents"
-          class="text-stone-400"
+          class="text-muted"
         >+{{ (o.surchargeCents / 100).toFixed(2) }}</span>
       </label>
     </div>

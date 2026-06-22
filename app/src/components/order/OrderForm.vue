@@ -64,28 +64,34 @@ async function submit() {
       v-model="name"
       placeholder="Your name"
       required
-      class="w-full rounded border border-stone-300 px-3 py-2"
+      class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
     >
     <label
       v-if="presets.length"
       class="block text-sm"
     >
-      <span class="text-stone-700">Start from a preset (optional)</span>
-      <select
-        v-model="presetId"
-        class="mt-1 w-full rounded border border-stone-300 px-2 py-2"
-      >
-        <option value="">
-          — build my own —
-        </option>
-        <option
-          v-for="p in presets"
-          :key="p.id"
-          :value="p.id"
+      <span class="text-ink">Start from a preset (optional)</span>
+      <div class="relative mt-1">
+        <select
+          v-model="presetId"
+          class="w-full appearance-none rounded-md border-[0.5px] border-border bg-card px-3 py-2 pr-9 text-base text-ink focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
         >
-          {{ p.name }}
-        </option>
-      </select>
+          <option value="">
+            — build my own —
+          </option>
+          <option
+            v-for="p in presets"
+            :key="p.id"
+            :value="p.id"
+          >
+            {{ p.name }}
+          </option>
+        </select>
+        <i
+          class="ti ti-chevron-down pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted"
+          aria-hidden="true"
+        />
+      </div>
     </label>
     <CategorySelect
       v-for="c in categories"
@@ -96,18 +102,18 @@ async function submit() {
     <input
       v-model="notes"
       placeholder="Anything else? (optional)"
-      class="w-full rounded border border-stone-300 px-3 py-2"
+      class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
     >
     <p
       v-if="error"
-      class="text-sm text-red-600"
+      class="text-sm text-error"
     >
       {{ error }}
     </p>
     <button
       type="submit"
       :disabled="submitting"
-      class="w-full rounded bg-stone-800 px-4 py-2 text-white disabled:opacity-50"
+      class="w-full rounded-lg bg-roast px-4 py-2 text-base font-semibold text-surface hover:bg-roast/90 active:scale-[.99] disabled:opacity-45"
     >
       Place order
     </button>
