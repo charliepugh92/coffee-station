@@ -32,12 +32,12 @@ function onReordered(orderId: string, token: string, stationName: string) {
 
 <template>
   <section class="mx-auto max-w-lg">
-    <h2 class="text-lg font-semibold">
+    <h2 class="font-display text-2xl">
       Your orders
     </h2>
     <p
       v-if="!tokens.length"
-      class="mt-2 text-sm text-stone-500"
+      class="mt-3 rounded-md bg-sunken p-4 text-sm text-muted"
     >
       You haven't ordered yet. Orders you place are saved on this device so you can
       track them, reorder, and leave a review later.

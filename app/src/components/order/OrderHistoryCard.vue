@@ -10,7 +10,7 @@ import type {
   ReorderMutation,
   ReorderMutationVariables,
 } from '@/graphql/generated/types'
-import { orderStatusMessage } from '@/utils/orderStatus'
+import { statusPillClass, statusPillLabel } from '@/utils/orderStatus'
 import OrderFeedback from '@/components/order/OrderFeedback.vue'
 
 const props = defineProps<{ order: OrderFieldsFragment; token: string }>()
@@ -33,35 +33,40 @@ async function reorder() {
 </script>
 
 <template>
-  <div class="rounded-lg border border-stone-200 bg-white p-4">
-    <div class="flex items-start justify-between">
+  <div class="rounded-lg border-[0.5px] border-border bg-card p-4">
+    <div class="flex items-start justify-between gap-3">
       <div>
-        <p class="font-medium">
+        <p class="font-display text-lg leading-tight">
           {{ order.stationName }}
         </p>
-        <p class="text-sm text-stone-500">
+        <p class="mt-1 text-sm text-muted">
           {{ order.selections.map((s) => s.name).join(', ') || order.menuPreset?.name || '—' }}
         </p>
       </div>
-      <span class="text-xs text-stone-400">{{ orderStatusMessage(order) }}</span>
+      <span
+        class="rounded-sm px-2 py-1 text-[11px] font-semibold uppercase tracking-[.08em]"
+        :class="statusPillClass(order.status)"
+      >
+        {{ statusPillLabel(order.status) }}
+      </span>
     </div>
     <img
       v-if="order.completionPhotoUrl"
       :src="order.completionPhotoUrl"
       alt=""
-      class="mt-3 max-h-40 rounded object-cover"
+      class="mt-3 max-h-40 rounded-lg object-cover"
     >
     <div class="mt-3">
       <button
         v-if="order.canReorder"
-        class="rounded bg-stone-800 px-3 py-1 text-xs text-white"
+        class="rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]"
         @click="reorder"
       >
         Order again
       </button>
       <span
         v-else
-        class="text-xs text-stone-400"
+        class="text-xs text-muted"
       >Station closed</span>
     </div>
     <OrderFeedback
