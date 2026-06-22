@@ -14,7 +14,9 @@ import type {
   OrderStatusEnum,
 } from '@/graphql/generated/types'
 import { statusPillClass, statusPillLabel } from '@/utils/orderStatus'
+import { type OrderMemory } from '@/utils/orderMemory'
 import PhotoConfirmModal from '@/components/order/PhotoConfirmModal.vue'
+import OrderBoardRowDetails from '@/components/order/OrderBoardRowDetails.vue'
 
 interface BoardOrder {
   id: string
@@ -22,8 +24,7 @@ interface BoardOrder {
   status: string
   queuePosition?: number | null
   notes?: string | null
-  selections: { name: string }[]
-  menuPreset?: { name: string } | null
+  memory: OrderMemory
   rating?: { stars: number } | null
   comments: { id: string; body: string }[]
 }
@@ -117,46 +118,7 @@ function cancelPreview() {
 
 <template>
   <div class="flex items-start justify-between gap-3 rounded-lg border-[0.5px] border-border bg-card p-4">
-    <div class="min-w-0">
-      <div class="text-base font-semibold text-ink">
-        {{ order.guestName }}
-        <span
-          v-if="order.queuePosition"
-          class="ml-1 text-xs font-normal text-muted"
-        >#{{ order.queuePosition }}</span>
-      </div>
-      <div class="mt-0.5 text-sm text-muted">
-        {{ order.selections.map((s) => s.name).join(', ') || order.menuPreset?.name || '—' }}
-      </div>
-      <div
-        v-if="order.notes"
-        class="mt-1 font-accent text-base text-muted"
-      >
-        “{{ order.notes }}”
-      </div>
-      <div
-        v-if="order.rating || order.comments.length"
-        class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1"
-      >
-        <span
-          v-if="order.rating"
-          class="inline-flex items-center gap-0.5 text-caramel"
-          :aria-label="`Rated ${order.rating.stars} of 5`"
-        >
-          <i
-            v-for="n in order.rating.stars"
-            :key="n"
-            class="ti ti-star text-sm"
-            aria-hidden="true"
-          />
-        </span>
-        <span
-          v-for="c in order.comments"
-          :key="c.id"
-          class="font-accent text-base text-muted"
-        >“{{ c.body }}”</span>
-      </div>
-    </div>
+    <OrderBoardRowDetails :order="order" />
     <div class="flex shrink-0 flex-col items-end gap-2">
       <span
         class="rounded-sm px-2 py-1 text-[11px] font-semibold uppercase tracking-[.08em]"

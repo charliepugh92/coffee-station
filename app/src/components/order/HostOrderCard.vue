@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { OrderFieldsFragment } from '@/graphql/generated/types'
 import { statusPillClass, statusPillLabel } from '@/utils/orderStatus'
+import { memorySummary } from '@/utils/orderMemory'
 
 defineProps<{ order: OrderFieldsFragment }>()
 const emit = defineEmits<{ delete: [id: string, guestName: string] }>()
@@ -13,11 +14,6 @@ function formatDate(iso: string): string {
     hour: 'numeric',
     minute: '2-digit',
   })
-}
-
-function summary(o: OrderFieldsFragment): string {
-  const parts = [o.base?.name, o.menuPreset?.name, ...o.selections.map((s) => s.name)].filter(Boolean)
-  return parts.length ? parts.join(' · ') : '—'
 }
 </script>
 
@@ -57,14 +53,16 @@ function summary(o: OrderFieldsFragment): string {
       </div>
 
       <p class="text-sm text-ink">
-        {{ summary(order) }}
+        {{ memorySummary(order.memory) }}
       </p>
-      <p
-        v-if="order.notes"
-        class="font-accent text-base text-muted"
-      >
-        “{{ order.notes }}”
-      </p>
+      <div v-if="order.notes">
+        <p class="text-[10px] font-semibold uppercase tracking-wide text-muted">
+          Notes
+        </p>
+        <p class="font-accent text-base text-muted">
+          “{{ order.notes }}”
+        </p>
+      </div>
 
       <div
         v-if="order.rating"
@@ -78,13 +76,18 @@ function summary(o: OrderFieldsFragment): string {
           aria-hidden="true"
         />
       </div>
-      <p
-        v-for="c in order.comments"
-        :key="c.id"
-        class="font-accent text-base text-muted"
-      >
-        “{{ c.body }}”
-      </p>
+      <div v-if="order.comments.length">
+        <p class="text-[10px] font-semibold uppercase tracking-wide text-muted">
+          Feedback
+        </p>
+        <p
+          v-for="c in order.comments"
+          :key="c.id"
+          class="font-accent text-base text-muted"
+        >
+          “{{ c.body }}”
+        </p>
+      </div>
 
       <button
         class="mt-auto self-start pt-1 text-xs text-muted hover:text-error"

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useMenuMutations } from '@/composables/useMenuMutations'
 import type { StationDetailFragment } from '@/graphql/generated/types'
 import BaseRow from '@/components/menu/BaseRow.vue'
+import type { BaseEdit } from '@/components/menu/baseForm'
 
 const props = defineProps<{ station: StationDetailFragment }>()
 const emit = defineEmits<{ changed: [] }>()
@@ -40,6 +41,11 @@ async function addBase() {
   emit('changed')
 }
 
+async function saveBase(id: string, attrs: BaseEdit, categoryIds: string[]) {
+  await menu.upsertBase({ stationId: props.station.id, id, attrs, categoryIds })
+  emit('changed')
+}
+
 async function removeBase(id: string) {
   await menu.deleteBase({ id })
   emit('changed')
@@ -67,9 +73,11 @@ async function onImage(baseId: string, event: Event) {
         v-for="b in station.bases"
         :key="b.id"
         :base="b"
+        :categories="categories"
         :category-label="categoryNames(b.categories.map((c) => c.id))"
         @image="onImage(b.id, $event)"
         @remove="removeBase(b.id)"
+        @save="(attrs, ids) => saveBase(b.id, attrs, ids)"
       />
     </ul>
     <form

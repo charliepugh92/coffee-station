@@ -6,6 +6,7 @@ mutation Reorder($orderToken: String!) {
       ...OrderFields
     }
     guestToken
+    warnings
     errors
   }
 }

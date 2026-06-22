@@ -8,17 +8,13 @@ fragment OrderFields on Order {
   createdAt
   stationName
   canReorder
-  base {
-    id
-    name
-  }
-  menuPreset {
-    id
-    name
-  }
-  selections {
-    id
-    name
+  memory {
+    baseName
+    presetName
+    groups {
+      category
+      options
+    }
   }
   rating {
     id

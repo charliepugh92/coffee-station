@@ -4,7 +4,6 @@ RSpec.describe Order, type: :model do
   it { is_expected.to belong_to(:session) }
   it { is_expected.to belong_to(:base).optional }
   it { is_expected.to belong_to(:menu_preset).optional }
-  it { is_expected.to have_many(:order_selections).dependent(:destroy) }
   it { is_expected.to validate_presence_of(:guest_name) }
   it { is_expected.to define_enum_for(:status).with_values(pending: 0, in_progress: 1, ready: 2) }
 

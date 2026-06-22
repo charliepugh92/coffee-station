@@ -20,12 +20,18 @@ module Mutations
 
         station = session.station
         base = station.bases.find_by(id: attrs.base_id) if attrs.base_id
-        order = session.orders.build(guest_name: attrs.guest_name, notes: attrs.notes, base:)
-        order.menu_preset = station.menu_presets.find_by(id: attrs.menu_preset_id) if attrs.menu_preset_id
+        preset = station.menu_presets.find_by(id: attrs.menu_preset_id) if attrs.menu_preset_id
+        options = resolve_options(station, attrs.option_ids, base)
 
+        order = session.orders.build(
+          guest_name: attrs.guest_name,
+          notes: attrs.notes,
+          base:,
+          menu_preset: preset,
+          memory: Order.build_memory(base:, preset:, options:)
+        )
         return error(order.errors.full_messages) unless order.save
 
-        order.customization_option_ids = sanitize_options(station, attrs.option_ids, base) if attrs.option_ids
         trigger_order_added(order)
         { order:, guest_token: order.guest_token, errors: [] }
       end
@@ -36,15 +42,16 @@ module Mutations
         { order: nil, guest_token: nil, errors: Array(messages) }
       end
 
-      # Options the order may include: scoped to the categories enabled by the
-      # chosen base, or the station's whole menu when no base was picked.
-      def station_option_ids(station, base = nil)
-        categories = base ? base.customization_categories : station.customization_categories
-        CustomizationOption.where(customization_category_id: categories.select(:id)).ids
-      end
+      # The chosen option records, scoped to the categories the base enables (or
+      # the station's whole menu when no base was picked). Loaded so the order's
+      # memory snapshot can capture their names.
+      def resolve_options(station, ids, base)
+        return [] if ids.blank?
 
-      def sanitize_options(station, ids, base = nil)
-        ids.map(&:to_i) & station_option_ids(station, base)
+        categories = base ? base.customization_categories : station.customization_categories
+        CustomizationOption
+          .where(customization_category_id: categories.select(:id), id: ids.map(&:to_i))
+          .includes(:customization_category)
       end
     end
   end

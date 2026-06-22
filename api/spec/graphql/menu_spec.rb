@@ -44,6 +44,14 @@ RSpec.describe "Menu building", type: :graphql do
       result = run("mutation($id: ID!) { deleteCategory(input: { id: $id }) { success } }", { "id" => cat.id })
       expect(gql_data(result, "deleteCategory", "success")).to be(true)
     end
+
+    it "deletes a category a base enables, leaving the base", :aggregate_failures do
+      cat = create(:customization_category, station:)
+      base = create(:base, station:, customization_categories: [ cat ])
+      run("mutation($id: ID!) { deleteCategory(input: { id: $id }) { success } }", { "id" => cat.id })
+      expect(CustomizationCategory.exists?(cat.id)).to be(false)
+      expect(Base.exists?(base.id)).to be(true)
+    end
   end
 
   describe "options" do
@@ -59,6 +67,22 @@ RSpec.describe "Menu building", type: :graphql do
       option = create(:customization_option, customization_category: category)
       result = run("mutation($id: ID!) { deleteOption(input: { id: $id }) { success } }", { "id" => option.id })
       expect(gql_data(result, "deleteOption", "success")).to be(true)
+    end
+
+    it "cascade-deletes presets that include a deleted option", :aggregate_failures do
+      option = create(:customization_option, customization_category: category)
+      preset = create(:menu_preset, station:, customization_options: [ option ])
+      result = run("mutation($id: ID!) { deleteOption(input: { id: $id }) { success } }", { "id" => option.id })
+      expect(gql_data(result, "deleteOption", "success")).to be(true)
+      expect(MenuPreset.exists?(preset.id)).to be(false)
+    end
+
+    it "deletes a category whose options are used in presets", :aggregate_failures do
+      option = create(:customization_option, customization_category: category)
+      preset = create(:menu_preset, station:, customization_options: [ option ])
+      run("mutation($id: ID!) { deleteCategory(input: { id: $id }) { success } }", { "id" => category.id })
+      expect(CustomizationOption.exists?(option.id)).to be(false)
+      expect(MenuPreset.exists?(preset.id)).to be(false)
     end
 
     it "attaches an image and exposes its URL" do

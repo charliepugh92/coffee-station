@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { apolloClient } from '@/utils/apolloClient'
 import CreateOrderDocument from '@/graphql/gql/orders/mutations/CreateOrder.graphql'
 import type {
@@ -10,6 +10,7 @@ import type {
   CreateOrderMutationVariables,
 } from '@/graphql/generated/types'
 import CategorySelect from '@/components/order/CategorySelect.vue'
+import BaseSelect from '@/components/order/BaseSelect.vue'
 
 const props = defineProps<{
   sessionToken: string
@@ -39,6 +40,35 @@ const visibleCategories = computed(() => {
   if (!selectedBase.value) return []
   const allowed = new Set(selectedBase.value.categories.map((c) => c.id))
   return props.categories.filter((c) => allowed.has(c.id))
+})
+
+// The categories the chosen base enables, or null when there's no base (whole
+// menu allowed). A preset is only offered when every category it touches is
+// available for the chosen base — e.g. a Cortado without Syrups can't take a
+// syrup preset like "Raspberry Mocha".
+const allowedCategoryIds = computed(() =>
+  selectedBase.value ? new Set(selectedBase.value.categories.map((c) => c.id)) : null,
+)
+
+function presetCategoryIds(preset: PresetFieldsFragment): string[] {
+  const ids = new Set<string>()
+  for (const opt of preset.options) {
+    const cat = props.categories.find((c) => c.options.some((o) => o.id === opt.id))
+    if (cat) ids.add(cat.id)
+  }
+  return [...ids]
+}
+
+function isPresetCompatible(preset: PresetFieldsFragment): boolean {
+  const allowed = allowedCategoryIds.value
+  if (!allowed) return true
+  return presetCategoryIds(preset).every((id) => allowed.has(id))
+}
+
+// Switching base can strand a now-incompatible preset selection — drop it.
+watch(baseId, () => {
+  const preset = props.presets.find((p) => p.id === presetId.value)
+  if (preset && !isPresetCompatible(preset)) presetId.value = ''
 })
 
 // Preset bundling: a category that the preset names is locked (pre-filled,
@@ -100,47 +130,41 @@ async function submit() {
 </script>
 
 <template>
+  <BaseSelect
+    v-if="hasBases && !baseId"
+    :bases="bases"
+    @select="baseId = $event"
+  />
   <form
+    v-else
     class="space-y-4"
     @submit.prevent="submit"
   >
+    <div
+      v-if="selectedBase"
+      class="flex items-center justify-between gap-2 rounded-md bg-sunken px-3 py-2"
+    >
+      <span class="text-sm font-semibold text-ink">
+        {{ selectedBase.name }}
+        <span
+          v-if="selectedBase.surchargeCents"
+          class="font-normal text-muted"
+        >+{{ (selectedBase.surchargeCents / 100).toFixed(2) }}</span>
+      </span>
+      <button
+        type="button"
+        class="text-xs text-muted hover:text-ink"
+        @click="baseId = ''"
+      >
+        ← Change base
+      </button>
+    </div>
     <input
       v-model="name"
       placeholder="Your name"
       required
       class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
     >
-    <label
-      v-if="hasBases"
-      class="block text-sm"
-    >
-      <span class="text-ink">Choose your base<span class="text-error">*</span></span>
-      <div class="relative mt-1">
-        <select
-          v-model="baseId"
-          required
-          class="w-full appearance-none rounded-md border-[0.5px] border-border bg-card px-3 py-2 pr-9 text-base text-ink focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
-        >
-          <option
-            value=""
-            disabled
-          >
-            — pick a base —
-          </option>
-          <option
-            v-for="b in bases"
-            :key="b.id"
-            :value="b.id"
-          >
-            {{ b.name }}{{ b.surchargeCents ? ` (+${(b.surchargeCents / 100).toFixed(2)})` : '' }}
-          </option>
-        </select>
-        <i
-          class="ti ti-chevron-down pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted"
-          aria-hidden="true"
-        />
-      </div>
-    </label>
     <label
       v-if="presets.length"
       class="block text-sm"
@@ -158,8 +182,9 @@ async function submit() {
             v-for="p in presets"
             :key="p.id"
             :value="p.id"
+            :disabled="!isPresetCompatible(p)"
           >
-            {{ p.name }}
+            {{ p.name }}{{ isPresetCompatible(p) ? '' : ` — n/a for ${selectedBase?.name}` }}
           </option>
         </select>
         <i

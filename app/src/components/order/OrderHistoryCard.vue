@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useSubscription } from '@vue/apollo-composable'
 import { apolloClient } from '@/utils/apolloClient'
 import OrderUpdatedDocument from '@/graphql/gql/orders/subscriptions/OrderUpdated.graphql'
@@ -11,6 +12,7 @@ import type {
   ReorderMutationVariables,
 } from '@/graphql/generated/types'
 import { statusPillClass, statusPillLabel } from '@/utils/orderStatus'
+import { memorySummary } from '@/utils/orderMemory'
 import OrderFeedback from '@/components/order/OrderFeedback.vue'
 
 const props = defineProps<{ order: OrderFieldsFragment; token: string }>()
@@ -22,13 +24,18 @@ useSubscription<OrderUpdatedSubscription, OrderUpdatedSubscriptionVariables>(
   () => ({ orderToken: props.token }),
 )
 
+// Parts of a reorder the current menu could no longer reproduce, shown to the guest.
+const warnings = ref<string[]>([])
+
 async function reorder() {
   const { data } = await apolloClient.mutate<ReorderMutation, ReorderMutationVariables>({
     mutation: ReorderDocument,
     variables: { orderToken: props.token },
   })
   const res = data?.reorder
-  if (res?.order && res.guestToken) emit('reordered', res.order.id, res.guestToken, res.order.stationName)
+  if (!res?.order || !res.guestToken) return
+  warnings.value = res.warnings
+  emit('reordered', res.order.id, res.guestToken, res.order.stationName)
 }
 </script>
 
@@ -40,7 +47,7 @@ async function reorder() {
           {{ order.stationName }}
         </p>
         <p class="mt-1 text-sm text-muted">
-          {{ order.selections.map((s) => s.name).join(', ') || order.menuPreset?.name || '—' }}
+          {{ memorySummary(order.memory) }}
         </p>
       </div>
       <span
@@ -68,6 +75,20 @@ async function reorder() {
         v-else
         class="text-xs text-muted"
       >Station closed</span>
+    </div>
+    <div
+      v-if="warnings.length"
+      class="mt-2 rounded-md bg-sunken p-2 text-xs text-muted"
+    >
+      <p class="font-semibold text-ink">
+        We couldn't fully recreate your order:
+      </p>
+      <p
+        v-for="(w, i) in warnings"
+        :key="i"
+      >
+        {{ w }}
+      </p>
     </div>
     <OrderFeedback
       :token="token"

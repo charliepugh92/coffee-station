@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { apolloClient } from '@/utils/apolloClient'
 import { apiFetch, ApiError } from '@/utils/api'
 import * as tokenStorage from '@/utils/tokenStorage'
+import { usePushNotifications } from '@/composables/usePushNotifications'
 import MeDocument from '@/graphql/gql/auth/queries/Me.graphql'
 import type { MeQuery, UserFieldsFragment } from '@/graphql/generated/types'
 
@@ -64,6 +65,13 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout() {
+    // Stop this device receiving host order alerts. Best-effort, and before
+    // clearAuth() wipes the Apollo cache the unregister mutation rides on.
+    try {
+      await usePushNotifications().unsubscribe()
+    } catch {
+      // ignore — sign-out should proceed regardless
+    }
     try {
       await apiFetch('/users/sign_out', { method: 'DELETE' })
     } catch {

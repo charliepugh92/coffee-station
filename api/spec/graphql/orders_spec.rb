@@ -9,11 +9,15 @@ RSpec.describe "Orders", type: :graphql do
     let(:q) do
       "mutation($t: String!, $a: OrderInput!) " \
         "{ createOrder(input: { sessionToken: $t, attrs: $a }) " \
-        "{ order { id queuePosition selections { id } } guestToken errors } }"
+        "{ order { id queuePosition memory { groups { category options } } } guestToken errors } }"
     end
 
     def place(token, attrs = { "guestName" => "Sam" })
       execute_query(q, variables: { "t" => token, "a" => attrs }, context: {})
+    end
+
+    def remembered_options(result)
+      gql_data(result, "createOrder", "order", "memory", "groups").flat_map { |g| g["options"] }
     end
 
     it "places an order and returns a guest token", :aggregate_failures do
@@ -22,11 +26,11 @@ RSpec.describe "Orders", type: :graphql do
       expect(gql_data(result, "createOrder", "order", "queuePosition")).to eq(1)
     end
 
-    it "only keeps options that belong to the station" do
+    it "only remembers options that belong to the station" do
       mine = create(:customization_option, customization_category: create(:customization_category, station:))
       foreign = create(:customization_option)
       result = place(session.share_token, { "guestName" => "Sam", "optionIds" => [ mine.id, foreign.id ] })
-      expect(gql_data(result, "createOrder", "order", "selections").map { |o| o["id"] }).to eq([ mine.id.to_s ])
+      expect(remembered_options(result)).to eq([ mine.name ])
     end
 
     it "rejects orders on a closed session" do
@@ -43,15 +47,15 @@ RSpec.describe "Orders", type: :graphql do
     let(:base) { create(:base, station:) }
     let(:bq) do
       "mutation($t: String!, $a: OrderInput!) { createOrder(input: { sessionToken: $t, attrs: $a }) " \
-        "{ order { selections { id } base { id } } errors } }"
+        "{ order { memory { baseName groups { category options } } } errors } }"
     end
 
-    it "keeps only options from categories the base enables", :aggregate_failures do
+    it "remembers only options from categories the base enables", :aggregate_failures do
       on = create(:customization_option, customization_category: create(:customization_category, station:).tap { |c| base.customization_categories << c })
       off = create(:customization_option, customization_category: create(:customization_category, station:))
       result = execute_query(bq, variables: { "t" => session.share_token, "a" => { "guestName" => "Sam", "baseId" => base.id, "optionIds" => [ on.id, off.id ] } }, context: {})
-      expect(gql_data(result, "createOrder", "order", "selections").map { |o| o["id"] }).to eq([ on.id.to_s ])
-      expect(gql_data(result, "createOrder", "order", "base", "id")).to eq(base.id.to_s)
+      expect(gql_data(result, "createOrder", "order", "memory", "groups").flat_map { |g| g["options"] }).to eq([ on.name ])
+      expect(gql_data(result, "createOrder", "order", "memory", "baseName")).to eq(base.name)
     end
   end
 

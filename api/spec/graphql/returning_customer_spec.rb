@@ -27,15 +27,24 @@ RSpec.describe "Returning customer", type: :graphql do
   end
 
   describe "reorder" do
-    let(:q) { "mutation($t: String!) { reorder(input: { orderToken: $t }) { order { id selections { id } } guestToken errors } }" }
-    let(:option) { create(:customization_option, customization_category: create(:customization_category, station:)) }
+    let(:q) { "mutation($t: String!) { reorder(input: { orderToken: $t }) { order { id memory { groups { category options } } } guestToken warnings errors } }" }
+    let(:category) { create(:customization_category, station:) }
+    let(:option) { create(:customization_option, customization_category: category) }
 
-    it "clones a past order's selections into the open session", :aggregate_failures do
-      prior = create(:order, session:)
-      prior.customization_options << option
+    it "rebuilds a past order from its remembered selections", :aggregate_failures do
+      prior = create(:order, session:, memory: Order.build_memory(base: nil, preset: nil, options: [ option ]))
       result = execute_query(q, variables: { "t" => prior.guest_token }, context: {})
       expect(gql_data(result, "reorder", "guestToken")).to be_present
-      expect(gql_data(result, "reorder", "order", "selections").map { |o| o["id"] }).to eq([ option.id.to_s ])
+      expect(gql_data(result, "reorder", "warnings")).to be_empty
+      expect(gql_data(result, "reorder", "order", "memory", "groups")).to eq([ { "category" => category.name, "options" => [ option.name ] } ])
+    end
+
+    it "still reorders but warns when a remembered option is gone", :aggregate_failures do
+      prior = create(:order, session:, memory: Order.build_memory(base: nil, preset: nil, options: [ option ]))
+      option.destroy
+      result = execute_query(q, variables: { "t" => prior.guest_token }, context: {})
+      expect(gql_data(result, "reorder", "guestToken")).to be_present
+      expect(gql_data(result, "reorder", "warnings")).not_to be_empty
     end
 
     it "refuses to reorder when the station is closed" do

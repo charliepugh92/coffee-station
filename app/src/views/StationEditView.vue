@@ -111,6 +111,7 @@ async function addCategory() {
         v-for="c in result.station.customizationCategories"
         :key="c.id"
         :category="c"
+        :presets="result.station.menuPresets"
         @changed="refetch"
       />
     </div>

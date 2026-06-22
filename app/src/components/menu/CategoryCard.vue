@@ -1,11 +1,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useMenuMutations } from '@/composables/useMenuMutations'
-import type { CategoryFieldsFragment } from '@/graphql/generated/types'
+import type { CategoryFieldsFragment, PresetFieldsFragment } from '@/graphql/generated/types'
 
-const props = defineProps<{ category: CategoryFieldsFragment }>()
+const props = defineProps<{ category: CategoryFieldsFragment; presets: PresetFieldsFragment[] }>()
 const emit = defineEmits<{ changed: [] }>()
 const menu = useMenuMutations()
+
+// Deleting an option (or a category, which deletes its options) cascades to any
+// preset that includes it — warn the host with the preset names before deleting.
+function presetsUsing(optionIds: Set<string>): string[] {
+  return props.presets.filter((p) => p.options.some((o) => optionIds.has(o.id))).map((p) => p.name)
+}
+
+function confirmCascade(action: string, names: string[]): boolean {
+  if (!names.length) return true
+  const which = names.length === 1 ? 'this preset' : 'these presets'
+  return window.confirm(`${action} will also delete ${which}: ${names.join(', ')}.`)
+}
 
 const optionName = ref('')
 const surcharge = ref('')
@@ -22,6 +34,8 @@ async function addOption() {
 }
 
 async function removeOption(id: string) {
+  const option = props.category.options.find((o) => o.id === id)
+  if (!confirmCascade(`Deleting “${option?.name}”`, presetsUsing(new Set([id])))) return
   await menu.deleteOption({ id })
   emit('changed')
 }
@@ -34,6 +48,8 @@ async function onImage(optionId: string, event: Event) {
 }
 
 async function removeCategory() {
+  const optionIds = new Set(props.category.options.map((o) => o.id))
+  if (!confirmCascade(`Deleting the “${props.category.name}” category`, presetsUsing(optionIds))) return
   await menu.deleteCategory({ id: props.category.id })
   emit('changed')
 }

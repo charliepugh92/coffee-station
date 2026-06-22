@@ -13,8 +13,8 @@ module Mutations
       def resolve(order_id:)
         order = find_owned_order!(order_id)
         session = order.session
-        # destroy cascades to order_selections, rating and comments, and
-        # ActiveStorage purges the attached completion_photo blob.
+        # destroy cascades to rating and comments, and ActiveStorage purges the
+        # attached completion_photo blob.
         order.destroy
         # Remaining queued orders shift up, so re-notify their guests.
         trigger_queue_refresh(session)

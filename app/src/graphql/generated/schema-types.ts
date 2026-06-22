@@ -714,8 +714,6 @@ export type OptionAttrsInput = {
 /** A guest's coffee order */
 export type Order = {
   __typename?: 'Order';
-  /** The chosen base drink, if any */
-  base?: Maybe<Base>;
   /** Whether the order's station is currently open, so it can be reordered */
   canReorder: Scalars['Boolean']['output'];
   /** Guest comments on this order */
@@ -728,16 +726,14 @@ export type Order = {
   guestName: Scalars['String']['output'];
   /** Unique order ID */
   id: Scalars['ID']['output'];
-  /** The preset the guest picked, if any */
-  menuPreset?: Maybe<MenuPreset>;
+  /** Self-contained snapshot of what was ordered (base, preset, options) */
+  memory: OrderMemory;
   /** Free-text notes from the guest */
   notes?: Maybe<Scalars['String']['output']>;
   /** 1-based spot in the make-line, or null once ready/picked up */
   queuePosition?: Maybe<Scalars['Int']['output']>;
   /** The guest's rating, once left */
   rating?: Maybe<Rating>;
-  /** Chosen customization options */
-  selections: Array<CustomizationOption>;
   /** ID of the station this order was placed at */
   stationId: Scalars['ID']['output'];
   /** Name of the station this order was placed at */
@@ -765,6 +761,26 @@ export type OrderInput = {
   notes?: InputMaybe<Scalars['String']['input']>;
   /** Chosen customization options */
   optionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
+
+/** A self-contained snapshot of an order's contents, independent of the live menu */
+export type OrderMemory = {
+  __typename?: 'OrderMemory';
+  /** Chosen base name as it was when ordered */
+  baseName?: Maybe<Scalars['String']['output']>;
+  /** Chosen options grouped by category */
+  groups: Array<OrderMemoryGroup>;
+  /** Chosen preset name as it was when ordered */
+  presetName?: Maybe<Scalars['String']['output']>;
+};
+
+/** One category's chosen options within an order's snapshot */
+export type OrderMemoryGroup = {
+  __typename?: 'OrderMemoryGroup';
+  /** Category name as it was when ordered */
+  category: Scalars['String']['output'];
+  /** Chosen option names */
+  options: Array<Scalars['String']['output']>;
 };
 
 /** Order mutations */
@@ -1069,6 +1085,8 @@ export type ReorderPayload = {
   guestToken?: Maybe<Scalars['String']['output']>;
   /** The new order */
   order?: Maybe<Order>;
+  /** Parts of the original order that the current menu can no longer reproduce */
+  warnings: Array<Scalars['String']['output']>;
 };
 
 /** How many options a customization category allows: a single choice or many */

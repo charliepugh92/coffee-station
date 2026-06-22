@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useQuery, useSubscription } from '@vue/apollo-composable'
 import OrderByTokenDocument from '@/graphql/gql/orders/queries/OrderByToken.graphql'
 import OrderUpdatedDocument from '@/graphql/gql/orders/subscriptions/OrderUpdated.graphql'
@@ -30,6 +30,22 @@ useSubscription<OrderUpdatedSubscription, OrderUpdatedSubscriptionVariables>(
 
 const order = computed(() => result.value?.orderByToken ?? null)
 const message = computed(() => (order.value ? orderStatusMessage(order.value) : 'Loading…'))
+
+// On mobile a backgrounded tab is frozen; when it's restored (bfcache) the live
+// subscription has missed the "ready" update and won't replay it, so the
+// completion photo/status stay stale until a manual reload. Refetch on resume so
+// the order's latest state (and its image) appears without the guest refreshing.
+function refetchOnResume() {
+  if (document.visibilityState === 'visible') refetch()
+}
+onMounted(() => {
+  document.addEventListener('visibilitychange', refetchOnResume)
+  window.addEventListener('pageshow', refetchOnResume)
+})
+onUnmounted(() => {
+  document.removeEventListener('visibilitychange', refetchOnResume)
+  window.removeEventListener('pageshow', refetchOnResume)
+})
 </script>
 
 <template>
