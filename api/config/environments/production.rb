@@ -84,5 +84,5 @@ Rails.application.configure do
 
   # Action Cable rejects cross-origin WebSocket handshakes unless the SPA origin
   # is whitelisted — without this, GraphQL subscriptions never connect in prod.
-  config.action_cable.allowed_request_origins = [ Rails.application.credentials.frontend_url ].compact
+  config.action_cable.allowed_request_origins = Rails.application.frontend_origins
 end

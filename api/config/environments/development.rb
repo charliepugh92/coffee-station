@@ -73,7 +73,7 @@ Rails.application.configure do
   # Action Cable rejects cross-origin WebSocket handshakes unless the frontend
   # origin is whitelisted — without this, GraphQL subscriptions silently never
   # connect from the Vite dev server. No dev credential entry, so this falls back.
-  config.action_cable.allowed_request_origins = [ Rails.application.credentials.frontend_url || "http://localhost:5173" ]
+  config.action_cable.allowed_request_origins = Rails.application.frontend_origins
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true

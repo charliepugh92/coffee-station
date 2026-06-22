@@ -2,11 +2,11 @@
 
 # Allow the Vue frontend (Vite dev server, or the deployed origin) to call the API.
 # `expose: Authorization` lets the SPA read the JWT issued by devise-jwt on login.
-# The deployed origin lives in encrypted credentials (production.yml.enc); dev/test/CI
-# have no such entry, so credentials return nil and we fall back to the Vite dev server.
+# Origins come from `frontend_url` (encrypted credentials in prod; Vite dev server
+# otherwise) and include both the apex and `www` variants — see Api::Application#frontend_origins.
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins Rails.application.credentials.frontend_url || "http://localhost:5173"
+    origins(*Rails.application.frontend_origins)
 
     resource "*",
       headers: :any,
