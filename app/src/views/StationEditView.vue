@@ -37,19 +37,27 @@ async function addCategory() {
   >
     <RouterLink
       to="/dashboard"
-      class="text-sm text-stone-500 hover:text-stone-800"
+      class="inline-flex items-center gap-1 text-sm text-muted hover:text-ink"
     >
-      ← Stations
+      <i
+        class="ti ti-arrow-left"
+        aria-hidden="true"
+      />
+      Stations
     </RouterLink>
     <div class="mt-2 flex items-center justify-between">
-      <h2 class="text-lg font-semibold">
+      <h2 class="font-display text-2xl">
         {{ result.station.name }}
       </h2>
       <RouterLink
         :to="`/stations/${id}/board`"
-        class="text-sm text-stone-500 hover:text-stone-800"
+        class="inline-flex items-center gap-1 text-sm text-muted hover:text-ink"
       >
-        Order board →
+        Order board
+        <i
+          class="ti ti-arrow-right"
+          aria-hidden="true"
+        />
       </RouterLink>
     </div>
 
@@ -66,26 +74,33 @@ async function addCategory() {
       <input
         v-model="catName"
         placeholder="New category (e.g. Milk)"
-        class="flex-1 rounded border border-stone-300 px-3 py-2"
+        class="flex-1 rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
       >
-      <select
-        v-model="catMode"
-        class="rounded border border-stone-300 px-2 py-2 text-sm"
-      >
-        <option value="SINGLE">
-          single
-        </option>
-        <option value="MULTI">
-          multi
-        </option>
-      </select>
-      <label class="flex items-center gap-1 text-sm text-stone-600">
+      <div class="relative">
+        <select
+          v-model="catMode"
+          class="appearance-none rounded-md border-[0.5px] border-border bg-card px-3 py-2 pr-9 text-sm text-ink focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
+        >
+          <option value="SINGLE">
+            single
+          </option>
+          <option value="MULTI">
+            multi
+          </option>
+        </select>
+        <i
+          class="ti ti-chevron-down pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted"
+          aria-hidden="true"
+        />
+      </div>
+      <label class="flex items-center gap-1.5 text-sm text-ink">
         <input
           v-model="catRequired"
           type="checkbox"
+          class="accent-roast"
         >required
       </label>
-      <button class="rounded bg-stone-800 px-4 py-2 text-white">
+      <button class="rounded-lg bg-roast px-4 py-2 text-base font-semibold text-surface hover:bg-roast/90 active:scale-[.99]">
         Add
       </button>
     </form>

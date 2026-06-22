@@ -18,6 +18,7 @@ import type {
   CompleteOrderMutationVariables,
   OrderStatusEnum,
 } from '@/graphql/generated/types'
+import { statusPillClass, statusPillLabel } from '@/utils/orderStatus'
 
 const route = useRoute()
 const id = route.params.id as string
@@ -31,6 +32,7 @@ const { onResult: onOrderAdded } = useSubscription<OrderAddedSubscription, Order
   () => ({ sessionToken: shareToken.value }),
   () => ({ enabled: !!shareToken.value }),
 )
+// TODO(style §8): flash the new row's bg-accent-tint for 200ms before settling.
 onOrderAdded(() => refetch())
 
 // PENDING → start, READY → picked up are plain status bumps. IN_PROGRESS → ready
@@ -65,17 +67,21 @@ async function complete(orderId: string, event: Event) {
   <section class="mx-auto max-w-3xl">
     <RouterLink
       :to="`/stations/${id}`"
-      class="text-sm text-stone-500 hover:text-stone-800"
+      class="inline-flex items-center gap-1 text-sm text-muted hover:text-ink"
     >
-      ← Station
+      <i
+        class="ti ti-arrow-left"
+        aria-hidden="true"
+      />
+      Station
     </RouterLink>
-    <h2 class="mt-2 text-lg font-semibold">
+    <h2 class="mt-2 font-display text-2xl">
       {{ result?.station?.name }} — order board
     </h2>
 
     <p
       v-if="!result?.station?.openSession"
-      class="mt-4 text-stone-500"
+      class="mt-4 rounded-md bg-sunken p-4 text-sm text-muted"
     >
       This station isn't open. Open it from the station page to take orders.
     </p>
@@ -85,51 +91,71 @@ async function complete(orderId: string, event: Event) {
     >
       <p
         v-if="!result.station.openSession.orders.length"
-        class="text-stone-400"
+        class="text-sm text-muted"
       >
         No orders yet.
       </p>
       <div
         v-for="o in result.station.openSession.orders"
         :key="o.id"
-        class="flex items-center justify-between rounded border border-stone-200 bg-white p-3"
+        class="flex items-start justify-between gap-3 rounded-lg border-[0.5px] border-border bg-card p-4"
       >
-        <div>
-          <div class="font-medium">
+        <div class="min-w-0">
+          <div class="text-base font-semibold text-ink">
             {{ o.guestName }}
             <span
               v-if="o.queuePosition"
-              class="text-xs text-stone-400"
+              class="ml-1 text-xs font-normal text-muted"
             >#{{ o.queuePosition }}</span>
           </div>
-          <div class="text-sm text-stone-500">
+          <div class="mt-0.5 text-sm text-muted">
             {{ o.selections.map((s) => s.name).join(', ') || o.menuPreset?.name || '—' }}
           </div>
           <div
             v-if="o.notes"
-            class="text-xs text-stone-400"
+            class="mt-1 font-accent text-base text-muted"
           >
             “{{ o.notes }}”
           </div>
           <div
             v-if="o.rating || o.comments.length"
-            class="mt-1 text-xs text-amber-600"
+            class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1"
           >
-            <span v-if="o.rating">{{ '★'.repeat(o.rating.stars) }}</span>
+            <span
+              v-if="o.rating"
+              class="inline-flex items-center gap-0.5 text-caramel"
+              :aria-label="`Rated ${o.rating.stars} of 5`"
+            >
+              <i
+                v-for="n in o.rating.stars"
+                :key="n"
+                class="ti ti-star text-sm"
+                aria-hidden="true"
+              />
+            </span>
             <span
               v-for="c in o.comments"
               :key="c.id"
-              class="ml-1 text-stone-500"
+              class="font-accent text-base text-muted"
             >“{{ c.body }}”</span>
           </div>
         </div>
-        <div class="flex items-center gap-3">
-          <span class="text-xs uppercase tracking-wide text-stone-400">{{ o.status.replace('_', ' ') }}</span>
+        <div class="flex shrink-0 flex-col items-end gap-2">
+          <span
+            class="rounded-sm px-2 py-1 text-[11px] font-semibold uppercase tracking-[.08em]"
+            :class="statusPillClass(o.status)"
+          >
+            {{ statusPillLabel(o.status) }}
+          </span>
           <label
             v-if="o.status === 'IN_PROGRESS'"
-            class="cursor-pointer rounded bg-stone-800 px-3 py-1 text-xs text-white"
+            class="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-ink px-3 py-1.5 text-sm font-semibold text-surface hover:bg-ink/90"
           >
-            Mark ready 📷
+            Mark ready
+            <i
+              class="ti ti-camera text-base"
+              aria-hidden="true"
+            />
             <input
               type="file"
               accept="image/*"
@@ -140,7 +166,7 @@ async function complete(orderId: string, event: Event) {
           </label>
           <button
             v-else-if="NEXT[o.status]"
-            class="rounded bg-stone-800 px-3 py-1 text-xs text-white"
+            class="rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]"
             @click="advance(o.id, o.status)"
           >
             {{ NEXT[o.status]?.label }}
