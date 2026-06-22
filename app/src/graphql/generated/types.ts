@@ -5,6 +5,13 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 import type * as Types from './schema-types';
 
 export * from './schema-types';
+export type RevokeSessionMutationVariables = Exact<{
+  sessionId: string | number;
+}>;
+
+
+export type RevokeSessionMutation = { revokeSession: { success: boolean, errors: Array<string> } | null };
+
 export type UpdateAccountMutationVariables = Exact<{
   email?: string | null | undefined;
   displayName?: string | null | undefined;
@@ -19,6 +26,11 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeQuery = { me: { id: string, email: string, displayName: string, createdAt: string } | null };
+
+export type MySessionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MySessionsQuery = { me: { id: string, sessions: Array<{ id: string, deviceLabel: string | null, lastActiveAt: string | null, createdAt: string, current: boolean }> } | null };
 
 export type AddCommentMutationVariables = Exact<{
   orderToken: string;

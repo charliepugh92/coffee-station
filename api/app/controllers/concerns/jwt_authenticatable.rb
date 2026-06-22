@@ -1,6 +1,7 @@
 # Bearer-token authentication for non-Devise endpoints (GraphQL). Decodes through
 # warden-jwt_auth so the secret/algorithm/expiry always match what devise-jwt
-# encoded, and honors jti revocation by matching the User's current jti.
+# encoded, and honors revocation by looking the token's jti up in the per-device
+# allowlist (user_sessions) rather than a single jti on the user.
 module JwtAuthenticatable
   extend ActiveSupport::Concern
 
@@ -16,12 +17,23 @@ module JwtAuthenticatable
 
     token = header.split(" ").last
     payload = Warden::JWTAuth::TokenDecoder.new.call(token)
-    @current_user = User.find_by(id: payload["sub"], jti: payload["jti"])
+    session = UserSession.active.find_by(jti: payload["jti"], user_id: payload["sub"])
+    return unless session
+
+    session.touch_activity!(request.user_agent)
+    @current_user = session.user
+    @current_jti = session.jti
   rescue JWT::DecodeError
     nil
   end
 
   def current_user
     @current_user
+  end
+
+  # The jti of the token on this request — lets GraphQL flag the caller's own
+  # session as "this device".
+  def current_jti
+    @current_jti
   end
 end

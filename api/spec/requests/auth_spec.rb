@@ -56,6 +56,30 @@ RSpec.describe "Auth", type: :request do
     end
   end
 
+  describe "multi-device sessions" do
+    let(:user) { create(:user) }
+    let(:phone) { user.generate_jwt }
+    let(:laptop) { user.generate_jwt }
+
+    def me_id(token)
+      post "/graphql", params: { query: "{ me { id } }" },
+        headers: { "Authorization" => "Bearer #{token}" }, as: :json
+      response.parsed_body.dig("data", "me", "id")
+    end
+
+    it "keeps every device authenticated after another device signs in", :aggregate_failures do
+      expect(me_id(phone)).to eq(user.id.to_s)
+      expect(me_id(laptop)).to eq(user.id.to_s)
+    end
+
+    it "revokes only the device that signs out", :aggregate_failures do
+      delete "/users/sign_out", headers: { "Authorization" => "Bearer #{phone}" }, as: :json
+      expect(response).to have_http_status(:ok)
+      expect(me_id(phone)).to be_nil            # the signed-out device is rejected
+      expect(me_id(laptop)).to eq(user.id.to_s) # the other device stays signed in
+    end
+  end
+
   describe "GraphQL authentication via Bearer token" do
     let(:user) { create(:user) }
 

@@ -8,6 +8,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: () => import('@/views/HomeView.vue'),
+      meta: { customerFacing: true },
     },
     {
       path: '/login',
@@ -58,12 +59,14 @@ const router = createRouter({
       path: '/s/:token',
       name: 'guest-order',
       component: () => import('@/views/GuestOrderView.vue'),
+      meta: { customerFacing: true },
     },
     {
       // Returning-customer hub — reads the browser's persisted order list.
       path: '/my-orders',
       name: 'my-orders',
       component: () => import('@/views/MyOrdersView.vue'),
+      meta: { customerFacing: true },
     },
   ],
 })

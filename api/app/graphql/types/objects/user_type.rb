@@ -9,6 +9,12 @@ module Types
       field :display_name, String, null: false, description: "Name shown to guests on the host's stations"
       field :email, String, null: false, description: "Login email"
       field :id, ID, null: false, description: "Unique user ID"
+      field :sessions, [ UserSessionType ], null: false,
+        description: "The host's signed-in devices, most recently active first"
+
+      def sessions
+        object.user_sessions.order(last_active_at: :desc, created_at: :desc)
+      end
     end
   end
 end

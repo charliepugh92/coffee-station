@@ -26,6 +26,8 @@ module Schemas
       description "Current-user mutations"
       graphql_name "UserMutations"
 
+      field :revoke_session, mutation: ::Mutations::Users::RevokeSession,
+        description: "Sign out one of the current host's devices"
       field :update_account, mutation: ::Mutations::Users::UpdateAccount,
         description: "Update the current host's email, display name and/or password"
     end

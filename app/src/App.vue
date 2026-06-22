@@ -1,11 +1,33 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { detectInAppBrowser } from '@/utils/inAppBrowser'
+import InAppBrowserGate from '@/components/InAppBrowserGate.vue'
 
 const auth = useAuthStore()
+const route = useRoute()
+
+// In-app browsers (Messenger, Instagram, …) break per-device order memory and
+// Web Push, so we block customer-facing pages and steer them to a real browser.
+const detection = detectInAppBrowser()
+const bypass = ref(false) // in-memory failsafe only — resets on reload
+const showGate = computed(
+  () => detection.inApp && !bypass.value && route.meta.customerFacing === true,
+)
 </script>
 
 <template>
-  <div class="min-h-screen bg-surface text-ink">
+  <InAppBrowserGate
+    v-if="showGate"
+    :platform="detection.platform"
+    :app="detection.app"
+    @continue-anyway="bypass = true"
+  />
+  <div
+    v-else
+    class="min-h-screen bg-surface text-ink"
+  >
     <header class="flex items-center justify-between border-b border-border px-6 py-4">
       <RouterLink
         to="/"

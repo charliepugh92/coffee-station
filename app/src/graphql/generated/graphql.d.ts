@@ -1,4 +1,13 @@
 
+declare module '*/RevokeSession.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const RevokeSession: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/UpdateAccount.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -12,6 +21,15 @@ declare module '*/Me.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
   export const Me: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/MySessions.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const MySessions: DocumentNode;
 
   export default defaultDocument;
 }

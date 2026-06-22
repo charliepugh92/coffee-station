@@ -6,6 +6,7 @@ import UpdateAccountDocument from '@/graphql/gql/auth/mutations/UpdateAccount.gr
 import type { UpdateAccountMutation, UpdateAccountMutationVariables } from '@/graphql/generated/types'
 import LabeledInput from '@/components/account/LabeledInput.vue'
 import FormFeedback from '@/components/account/FormFeedback.vue'
+import SignedInDevices from '@/components/account/SignedInDevices.vue'
 
 const auth = useAuthStore()
 
@@ -173,5 +174,7 @@ async function savePassword() {
         Change password
       </button>
     </form>
+
+    <SignedInDevices />
   </section>
 </template>

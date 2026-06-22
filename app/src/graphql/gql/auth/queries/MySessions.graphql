@@ -1,0 +1,12 @@
+query MySessions {
+  me {
+    id
+    sessions {
+      id
+      deviceLabel
+      lastActiveAt
+      createdAt
+      current
+    }
+  }
+}
