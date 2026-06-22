@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@apollo/client": "^3.14.1",
-    "@mdi/js": "^7.4.47",
     "@rails/actioncable": "^8.1.300",
+    "@tabler/icons-webfont": "^3.44.0",
     "@vue/apollo-composable": "^4.2.2",
     "@vueuse/core": "^14.3.0",
     "apollo-upload-client": "^17.0.0",
