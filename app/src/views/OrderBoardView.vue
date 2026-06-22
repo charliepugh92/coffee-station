@@ -11,6 +11,7 @@ import type {
   OrderAddedSubscriptionVariables,
 } from '@/graphql/generated/types'
 import OrderBoardRow from '@/components/order/OrderBoardRow.vue'
+import PushToggle from '@/components/PushToggle.vue'
 
 const route = useRoute()
 const id = route.params.id as string
@@ -46,9 +47,15 @@ const activeOrders = computed(
       />
       Station
     </RouterLink>
-    <h2 class="mt-2 font-display text-2xl">
-      {{ result?.station?.name }} — order board
-    </h2>
+    <div class="mt-2 flex items-center justify-between gap-3">
+      <h2 class="font-display text-2xl">
+        {{ result?.station?.name }} — order board
+      </h2>
+      <PushToggle
+        :target="{ kind: 'host' }"
+        label="Order alerts"
+      />
+    </div>
 
     <p
       v-if="!result?.station?.openSession"

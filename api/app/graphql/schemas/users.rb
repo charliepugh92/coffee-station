@@ -9,9 +9,15 @@ module Schemas
 
       field :me, Types::Objects::UserType, null: true,
         description: "The currently authenticated host, or null if unauthenticated"
+      field :vapid_public_key, String, null: true,
+        description: "Server's VAPID public key for Web Push subscription (null if push isn't configured)"
 
       def me
         context[:current_user]
+      end
+
+      def vapid_public_key
+        Rails.application.credentials.dig(:web_push, :vapid_public_key)
       end
     end
 

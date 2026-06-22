@@ -287,6 +287,33 @@ declare module '*/OrderUpdated.graphql' {
 }
     
 
+declare module '*/RegisterGuestPush.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const RegisterGuestPush: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/RegisterHostPush.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const RegisterHostPush: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/UnregisterPush.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const UnregisterPush: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
 declare module '*/CloseSession.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
@@ -372,6 +399,15 @@ declare module '*/ApiVersion.graphql' {
   import { DocumentNode } from 'graphql';
   const defaultDocument: DocumentNode;
   export const ApiVersion: DocumentNode;
+
+  export default defaultDocument;
+}
+    
+
+declare module '*/VapidPublicKey.graphql' {
+  import { DocumentNode } from 'graphql';
+  const defaultDocument: DocumentNode;
+  export const VapidPublicKey: DocumentNode;
 
   export default defaultDocument;
 }

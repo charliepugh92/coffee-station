@@ -12,6 +12,9 @@
     "OrderQueries": [
       "Query"
     ],
+    "PushMutations": [
+      "Mutation"
+    ],
     "SessionMutations": [
       "Mutation"
     ],

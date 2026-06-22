@@ -215,6 +215,32 @@ export type OrderUpdatedSubscriptionVariables = Exact<{
 
 export type OrderUpdatedSubscription = { orderUpdated: { order: { id: string, guestName: string, status: Types.OrderStatusEnum, queuePosition: number | null, notes: string | null, completionPhotoUrl: string | null, createdAt: string, stationName: string, canReorder: boolean, base: { id: string, name: string } | null, menuPreset: { id: string, name: string } | null, selections: Array<{ id: string, name: string }>, rating: { id: string, stars: number } | null, comments: Array<{ id: string, body: string, createdAt: string }> } } };
 
+export type RegisterGuestPushMutationVariables = Exact<{
+  orderToken: string;
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+}>;
+
+
+export type RegisterGuestPushMutation = { registerGuestPushSubscription: { success: boolean, errors: Array<string> } | null };
+
+export type RegisterHostPushMutationVariables = Exact<{
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+}>;
+
+
+export type RegisterHostPushMutation = { registerHostPushSubscription: { success: boolean, errors: Array<string> } | null };
+
+export type UnregisterPushMutationVariables = Exact<{
+  endpoint: string;
+}>;
+
+
+export type UnregisterPushMutation = { unregisterPushSubscription: { success: boolean, errors: Array<string> } | null };
+
 export type CloseSessionMutationVariables = Exact<{
   id: string | number;
 }>;
@@ -280,3 +306,8 @@ export type ApiVersionQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type ApiVersionQuery = { apiVersion: string };
+
+export type VapidPublicKeyQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type VapidPublicKeyQuery = { vapidPublicKey: string | null };

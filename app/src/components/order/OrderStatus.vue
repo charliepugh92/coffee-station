@@ -11,6 +11,7 @@ import type {
 } from '@/graphql/generated/types'
 import { orderStatusMessage } from '@/utils/orderStatus'
 import OrderFeedback from '@/components/order/OrderFeedback.vue'
+import PushToggle from '@/components/PushToggle.vue'
 
 const props = defineProps<{ token: string }>()
 
@@ -54,6 +55,15 @@ const message = computed(() => (order.value ? orderStatusMessage(order.value) : 
       alt="Your finished drink"
       class="mx-auto mt-4 max-h-56 rounded-lg object-cover"
     >
+    <div
+      v-if="order && order.status !== 'READY'"
+      class="mt-4 flex justify-center"
+    >
+      <PushToggle
+        :target="{ kind: 'guest', orderToken: token }"
+        label="Notify me when it's ready"
+      />
+    </div>
     <OrderFeedback
       v-if="order && order.status === 'READY'"
       :token="token"

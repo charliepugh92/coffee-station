@@ -67,10 +67,15 @@ module Mutations
 
     def trigger_order_added(order)
       ApiSchema.subscriptions.trigger(:order_added, { session_token: order.session.share_token }, order)
+      push_host_new_order(order)
     end
 
     def trigger_order_updated(order)
       ApiSchema.subscriptions.trigger(:order_updated, { order_token: order.guest_token }, order)
+      # Only the genuine "ready" hand-off pushes the guest. trigger_order_updated
+      # also fires for other status changes and from trigger_queue_refresh, which
+      # would otherwise spam every queued guest on each status bump.
+      push_guest_order_ready(order) if order.ready?
     end
 
     def trigger_session_updated(session)
@@ -81,6 +86,33 @@ module Mutations
     # queuePosition re-renders after one ahead of them is finished/advanced.
     def trigger_queue_refresh(session)
       session.orders.where(status: Order::ACTIVE_STATUSES).find_each { |order| trigger_order_updated(order) }
+    end
+
+    # --- Web Push (background notifications, even when the tab is closed) ---
+
+    def push_host_new_order(order)
+      station = order.session.station
+      payload = {
+        title: "New order — #{order.guest_name}",
+        body: order_summary(order),
+        url: "/stations/#{station.id}/board",
+        tag: "order-#{order.id}"
+      }
+      station.user.push_subscriptions.find_each { |sub| SendWebPushJob.perform_later(sub.id, payload) }
+    end
+
+    def push_guest_order_ready(order)
+      payload = {
+        title: "Your drink is ready! ☕",
+        body: "#{order.guest_name}, pick up your order at #{order.station.name}.",
+        url: "/s/#{order.guest_token}",
+        tag: "order-#{order.id}-ready"
+      }
+      order.push_subscriptions.find_each { |sub| SendWebPushJob.perform_later(sub.id, payload) }
+    end
+
+    def order_summary(order)
+      [ order.menu_preset&.name, order.base&.name ].compact.join(" · ").presence || order.guest_name
     end
   end
 end

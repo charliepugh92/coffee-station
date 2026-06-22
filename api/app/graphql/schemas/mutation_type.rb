@@ -14,6 +14,7 @@ module Schemas
     implements Schemas::Sessions::Mutations
     implements Schemas::Orders::Mutations
     implements Schemas::Feedback::Mutations
+    implements Schemas::Push::Mutations
 
     field :ping, Boolean, null: false, description: "No-op health-check mutation"
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_22_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -141,6 +141,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_120000) do
     t.index ["menu_preset_id"], name: "index_orders_on_menu_preset_id"
     t.index ["session_id", "status"], name: "index_orders_on_session_id_and_status"
     t.index ["session_id"], name: "index_orders_on_session_id"
+  end
+
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.string "auth_key", null: false
+    t.datetime "created_at", null: false
+    t.string "endpoint", null: false
+    t.string "p256dh_key", null: false
+    t.bigint "subscriber_id", null: false
+    t.string "subscriber_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
+    t.index ["subscriber_type", "subscriber_id"], name: "index_push_subscriptions_on_subscriber"
   end
 
   create_table "ratings", force: :cascade do |t|

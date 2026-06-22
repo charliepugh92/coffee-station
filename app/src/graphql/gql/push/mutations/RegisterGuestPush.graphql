@@ -1,0 +1,8 @@
+mutation RegisterGuestPush($orderToken: String!, $endpoint: String!, $p256dh: String!, $auth: String!) {
+  registerGuestPushSubscription(
+    input: { orderToken: $orderToken, endpoint: $endpoint, p256dh: $p256dh, auth: $auth }
+  ) {
+    success
+    errors
+  }
+}

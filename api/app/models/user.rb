@@ -7,6 +7,7 @@ class User < ApplicationRecord
          :jwt_authenticatable, jwt_revocation_strategy: self
 
   has_many :stations, dependent: :destroy
+  has_many :push_subscriptions, as: :subscriber, dependent: :destroy
 
   validates :display_name, presence: true, length: { maximum: 50 }
 

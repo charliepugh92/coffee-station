@@ -7,6 +7,7 @@ class Order < ApplicationRecord
   has_many :customization_options, through: :order_selections
   has_one :rating, dependent: :destroy
   has_many :comments, dependent: :destroy
+  has_many :push_subscriptions, as: :subscriber, dependent: :destroy
 
   has_secure_token :guest_token
 

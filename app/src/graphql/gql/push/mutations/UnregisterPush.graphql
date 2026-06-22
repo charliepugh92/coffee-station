@@ -1,0 +1,6 @@
+mutation UnregisterPush($endpoint: String!) {
+  unregisterPushSubscription(input: { endpoint: $endpoint }) {
+    success
+    errors
+  }
+}
