@@ -8,11 +8,14 @@ const { result } = useQuery<ApiVersionQuery>(ApiVersionDocument)
 
 <template>
   <section class="max-w-2xl">
-    <p class="text-stone-600">
+    <p class="font-accent text-2xl text-caramel">
+      small-batch · hometown · your pour
+    </p>
+    <p class="mt-3 text-base text-muted">
       A small-batch, hometown coffee station. Open the bar, share a link, and let
       the neighborhood order their pour.
     </p>
-    <p class="mt-3 text-xs uppercase tracking-wide text-stone-400">
+    <p class="mt-6 text-xs uppercase tracking-wide text-muted">
       API v{{ result?.apiVersion ?? '…' }}
     </p>
   </section>

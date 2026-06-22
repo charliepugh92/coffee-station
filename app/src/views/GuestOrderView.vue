@@ -43,13 +43,13 @@ function onPlaced(orderToken: string, orderId: string, guestName: string) {
   <section class="mx-auto max-w-lg">
     <p
       v-if="loading"
-      class="text-stone-400"
+      class="text-muted"
     >
       Loading the menu…
     </p>
     <p
       v-else-if="!result?.sessionByToken"
-      class="text-stone-500"
+      class="rounded-md bg-sunken p-4 text-muted"
     >
       This coffee link isn't valid.
     </p>
@@ -59,17 +59,17 @@ function onPlaced(orderToken: string, orderId: string, guestName: string) {
     />
     <p
       v-else-if="result.sessionByToken.status === 'CLOSED'"
-      class="rounded bg-stone-100 p-4 text-stone-500"
+      class="rounded-md bg-sunken p-4 text-muted"
     >
       ☕ This station is closed right now — check back later!
     </p>
     <div v-else>
-      <h2 class="text-xl font-semibold">
+      <h2 class="font-display text-2xl">
         {{ result.sessionByToken.station.name }}
       </h2>
       <p
         v-if="result.sessionByToken.station.description"
-        class="mt-1 mb-4 text-sm text-stone-500"
+        class="mt-1 mb-4 text-sm text-muted"
       >
         {{ result.sessionByToken.station.description }}
       </p>
