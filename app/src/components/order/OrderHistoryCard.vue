@@ -63,7 +63,7 @@ async function reorder() {
       alt=""
       class="mt-3 max-h-40 rounded-lg object-cover"
     >
-    <div class="mt-3">
+    <div class="mt-3 flex items-center gap-4">
       <button
         v-if="order.canReorder"
         class="rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]"
@@ -75,6 +75,13 @@ async function reorder() {
         v-else
         class="text-xs text-muted"
       >Station closed</span>
+      <RouterLink
+        v-if="order.status !== 'READY'"
+        :to="{ name: 'order-status', params: { token } }"
+        class="text-sm font-semibold text-roast hover:underline"
+      >
+        Track &amp; get notified →
+      </RouterLink>
     </div>
     <div
       v-if="warnings.length"

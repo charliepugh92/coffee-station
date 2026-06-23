@@ -108,7 +108,7 @@ module Mutations
       payload = {
         title: "Your drink is ready! ☕",
         body: "#{order.guest_name}, pick up your order at #{order.station.name}.",
-        url: "/s/#{order.guest_token}",
+        url: "/o/#{order.guest_token}",
         tag: "order-#{order.id}-ready"
       }
       order.push_subscriptions.find_each { |sub| WebPushSender.deliver(sub, payload) }

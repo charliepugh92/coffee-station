@@ -68,6 +68,14 @@ const router = createRouter({
       component: () => import('@/views/MyOrdersView.vue'),
       meta: { customerFacing: true },
     },
+    {
+      // Single order status, keyed by guest token. Deep-link target for the
+      // "your drink is ready" push and where a returning customer tracks status.
+      path: '/o/:token',
+      name: 'order-status',
+      component: () => import('@/views/OrderStatusView.vue'),
+      meta: { customerFacing: true },
+    },
   ],
 })
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useQuery, useSubscription } from '@vue/apollo-composable'
 import SessionByTokenDocument from '@/graphql/gql/sessions/queries/SessionByToken.graphql'
 import SessionUpdatedDocument from '@/graphql/gql/sessions/subscriptions/SessionUpdated.graphql'
@@ -12,12 +11,11 @@ import type {
 } from '@/graphql/generated/types'
 import { useGuestStore } from '@/stores/guest'
 import OrderForm from '@/components/order/OrderForm.vue'
-import OrderStatus from '@/components/order/OrderStatus.vue'
 
 const route = useRoute()
+const router = useRouter()
 const token = route.params.token as string
 const guest = useGuestStore()
-const placedToken = ref<string | null>(null)
 
 const { result, loading } = useQuery<SessionByTokenQuery, SessionByTokenQueryVariables>(
   SessionByTokenDocument,
@@ -35,7 +33,9 @@ useSubscription<SessionUpdatedSubscription, SessionUpdatedSubscriptionVariables>
 function onPlaced(orderToken: string, orderId: string, guestName: string) {
   const stationName = result.value?.sessionByToken?.station.name ?? 'Coffee'
   guest.remember({ orderId, orderToken, guestName, stationName, createdAt: new Date().toISOString() })
-  placedToken.value = orderToken
+  // Land on the stable order page so the URL is reloadable/shareable and matches
+  // the push deep-link, where the guest can track status and enable alerts.
+  router.push({ name: 'order-status', params: { token: orderToken } })
 }
 </script>
 
@@ -53,10 +53,6 @@ function onPlaced(orderToken: string, orderId: string, guestName: string) {
     >
       This coffee link isn't valid.
     </p>
-    <OrderStatus
-      v-else-if="placedToken"
-      :token="placedToken"
-    />
     <p
       v-else-if="result.sessionByToken.status === 'CLOSED'"
       class="rounded-md bg-sunken p-4 text-muted"
