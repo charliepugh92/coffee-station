@@ -20,7 +20,11 @@ type Target = { kind: 'host' } | { kind: 'guest'; orderToken: string }
 
 async function getRegistration(): Promise<ServiceWorkerRegistration> {
   // Idempotent — register() resolves to the existing registration if present.
-  return navigator.serviceWorker.register('/sw.js')
+  await navigator.serviceWorker.register('/sw.js')
+  // register() can resolve while the worker is still installing; on a fresh
+  // device pushManager.subscribe() then throws because there's no active worker
+  // yet. serviceWorker.ready only settles once a worker is active.
+  return navigator.serviceWorker.ready
 }
 
 async function fetchVapidKey(): Promise<string | null> {
@@ -55,37 +59,45 @@ export function usePushNotifications() {
   async function subscribe(target: Target): Promise<boolean> {
     if (!isPushSupported()) return false
 
-    const permission = await Notification.requestPermission()
-    store.setPermission(permission)
-    if (permission !== 'granted') return false
+    try {
+      const permission = await Notification.requestPermission()
+      store.setPermission(permission)
+      if (permission !== 'granted') return false
 
-    const key = await fetchVapidKey()
-    if (!key) return false
+      const key = await fetchVapidKey()
+      if (!key) return false
 
-    const reg = await getRegistration()
-    const sub =
-      (await reg.pushManager.getSubscription()) ??
-      (await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(key),
-      }))
+      const reg = await getRegistration()
+      const sub =
+        (await reg.pushManager.getSubscription()) ??
+        (await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(key),
+        }))
 
-    const { endpoint, p256dh, auth } = serialize(sub)
+      const { endpoint, p256dh, auth } = serialize(sub)
 
-    if (target.kind === 'host') {
-      const { data } = await apolloClient.mutate<RegisterHostPushMutation, RegisterHostPushMutationVariables>({
-        mutation: RegisterHostPushDocument,
-        variables: { endpoint, p256dh, auth },
-      })
-      store.setSubscribed(!!data?.registerHostPushSubscription?.success)
-    } else {
-      const { data } = await apolloClient.mutate<RegisterGuestPushMutation, RegisterGuestPushMutationVariables>({
-        mutation: RegisterGuestPushDocument,
-        variables: { orderToken: target.orderToken, endpoint, p256dh, auth },
-      })
-      store.setSubscribed(!!data?.registerGuestPushSubscription?.success)
+      if (target.kind === 'host') {
+        const { data } = await apolloClient.mutate<RegisterHostPushMutation, RegisterHostPushMutationVariables>({
+          mutation: RegisterHostPushDocument,
+          variables: { endpoint, p256dh, auth },
+        })
+        store.setSubscribed(!!data?.registerHostPushSubscription?.success)
+      } else {
+        const { data } = await apolloClient.mutate<RegisterGuestPushMutation, RegisterGuestPushMutationVariables>({
+          mutation: RegisterGuestPushDocument,
+          variables: { orderToken: target.orderToken, endpoint, p256dh, auth },
+        })
+        store.setSubscribed(!!data?.registerGuestPushSubscription?.success)
+      }
+      return store.subscribed
+    } catch (err) {
+      // Permission/subscribe/registration can all reject (e.g. no active worker
+      // yet, blocked push service). Fail soft so the UI just stays un-toggled.
+      console.error('Push subscription failed', err)
+      store.setSubscribed(false)
+      return false
     }
-    return store.subscribed
   }
 
   async function unsubscribe(): Promise<void> {

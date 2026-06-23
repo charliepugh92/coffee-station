@@ -98,7 +98,10 @@ module Mutations
         url: "/stations/#{station.id}/board",
         tag: "order-#{order.id}"
       }
-      station.user.push_subscriptions.find_each { |sub| SendWebPushJob.perform_later(sub.id, payload) }
+      # Delivered inline rather than via a background job: WebPushSender already
+      # swallows per-endpoint failures, so one dead device can't block the
+      # others, and inline delivery can't be dropped by a queue restart.
+      station.user.push_subscriptions.find_each { |sub| WebPushSender.deliver(sub, payload) }
     end
 
     def push_guest_order_ready(order)
@@ -108,7 +111,7 @@ module Mutations
         url: "/s/#{order.guest_token}",
         tag: "order-#{order.id}-ready"
       }
-      order.push_subscriptions.find_each { |sub| SendWebPushJob.perform_later(sub.id, payload) }
+      order.push_subscriptions.find_each { |sub| WebPushSender.deliver(sub, payload) }
     end
 
     def order_summary(order)

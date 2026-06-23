@@ -11,6 +11,7 @@ import type {
 } from '@/graphql/generated/types'
 import CategorySelect from '@/components/order/CategorySelect.vue'
 import BaseSelect from '@/components/order/BaseSelect.vue'
+import PresetSelect from '@/components/order/PresetSelect.vue'
 
 const props = defineProps<{
   sessionToken: string
@@ -20,6 +21,10 @@ const props = defineProps<{
   defaultName: string
 }>()
 const emit = defineEmits<{ placed: [token: string, orderId: string, guestName: string] }>()
+
+// Three-step flow: pick a base, pick a recipe (preset or "build it myself"),
+// then fill in the customizations. Steps with nothing to choose are skipped.
+type Step = 'base' | 'preset' | 'customize'
 
 const name = ref(props.defaultName)
 const notes = ref('')
@@ -31,6 +36,7 @@ const submitting = ref(false)
 
 const hasBases = computed(() => props.bases.length > 0)
 const selectedBase = computed(() => props.bases.find((b) => b.id === baseId.value))
+const selectedPreset = computed(() => props.presets.find((p) => p.id === presetId.value))
 
 // Which categories the guest can fill: scoped to the chosen base's enabled set
 // (or the whole menu when the station has no bases). With bases defined but none
@@ -65,11 +71,48 @@ function isPresetCompatible(preset: PresetFieldsFragment): boolean {
   return presetCategoryIds(preset).every((id) => allowed.has(id))
 }
 
+// Presets offered on the recipe step: only those valid for the chosen base.
+const compatiblePresets = computed(() => props.presets.filter(isPresetCompatible))
+
 // Switching base can strand a now-incompatible preset selection — drop it.
 watch(baseId, () => {
   const preset = props.presets.find((p) => p.id === presetId.value)
   if (preset && !isPresetCompatible(preset)) presetId.value = ''
 })
+
+// --- Step navigation ---
+// When there are no bases the flow opens on the recipe step (every preset is
+// compatible without a base); with no presets either, straight to customize.
+function initialStep(): Step {
+  if (hasBases.value) return 'base'
+  return compatiblePresets.value.length ? 'preset' : 'customize'
+}
+const step = ref<Step>(initialStep())
+
+function chooseBase(id: string) {
+  baseId.value = id
+  // Skip the recipe step when the chosen base has no valid presets.
+  step.value = compatiblePresets.value.length ? 'preset' : 'customize'
+}
+
+function choosePreset(id: string) {
+  presetId.value = id // '' = build it myself
+  step.value = 'customize'
+}
+
+function backFromPreset() {
+  if (!hasBases.value) return
+  baseId.value = ''
+  step.value = 'base'
+}
+
+function backFromCustomize() {
+  if (compatiblePresets.value.length) step.value = 'preset'
+  else if (hasBases.value) {
+    baseId.value = ''
+    step.value = 'base'
+  }
+}
 
 // Preset bundling: a category that the preset names is locked (pre-filled,
 // read-only); categories the preset leaves untouched stay user choice.
@@ -131,32 +174,49 @@ async function submit() {
 
 <template>
   <BaseSelect
-    v-if="hasBases && !baseId"
+    v-if="step === 'base'"
     :bases="bases"
-    @select="baseId = $event"
+    @select="chooseBase"
   />
+  <div
+    v-else-if="step === 'preset'"
+    class="space-y-3"
+  >
+    <button
+      v-if="hasBases"
+      type="button"
+      class="text-xs text-muted hover:text-ink"
+      @click="backFromPreset"
+    >
+      ← Change base
+    </button>
+    <PresetSelect
+      :presets="compatiblePresets"
+      @select="choosePreset"
+    />
+  </div>
   <form
     v-else
     class="space-y-4"
     @submit.prevent="submit"
   >
     <div
-      v-if="selectedBase"
+      v-if="selectedBase || selectedPreset"
       class="flex items-center justify-between gap-2 rounded-md bg-sunken px-3 py-2"
     >
-      <span class="text-sm font-semibold text-ink">
-        {{ selectedBase.name }}
+      <span class="min-w-0 text-sm font-semibold text-ink">
+        {{ [selectedPreset?.name, selectedBase?.name].filter(Boolean).join(' · ') }}
         <span
-          v-if="selectedBase.surchargeCents"
+          v-if="selectedBase?.surchargeCents"
           class="font-normal text-muted"
         >+{{ (selectedBase.surchargeCents / 100).toFixed(2) }}</span>
       </span>
       <button
         type="button"
-        class="text-xs text-muted hover:text-ink"
-        @click="baseId = ''"
+        class="shrink-0 text-xs text-muted hover:text-ink"
+        @click="backFromCustomize"
       >
-        ← Change base
+        ← Back
       </button>
     </div>
     <input
@@ -165,34 +225,6 @@ async function submit() {
       required
       class="w-full rounded-md border-[0.5px] border-border bg-card px-3 py-2 text-base text-ink placeholder:text-muted focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
     >
-    <label
-      v-if="presets.length"
-      class="block text-sm"
-    >
-      <span class="text-ink">Start from a preset (optional)</span>
-      <div class="relative mt-1">
-        <select
-          v-model="presetId"
-          class="w-full appearance-none rounded-md border-[0.5px] border-border bg-card px-3 py-2 pr-9 text-base text-ink focus:border-roast focus:ring-4 focus:ring-accent-tint focus:outline-none"
-        >
-          <option value="">
-            — build my own —
-          </option>
-          <option
-            v-for="p in presets"
-            :key="p.id"
-            :value="p.id"
-            :disabled="!isPresetCompatible(p)"
-          >
-            {{ p.name }}{{ isPresetCompatible(p) ? '' : ` — n/a for ${selectedBase?.name}` }}
-          </option>
-        </select>
-        <i
-          class="ti ti-chevron-down pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted"
-          aria-hidden="true"
-        />
-      </div>
-    </label>
     <CategorySelect
       v-for="c in visibleCategories"
       :key="c.id"

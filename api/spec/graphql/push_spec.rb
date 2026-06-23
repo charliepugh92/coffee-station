@@ -85,27 +85,26 @@ RSpec.describe "Push", type: :graphql do
       )
     end
 
-    it "enqueues a host push when a guest places an order" do
+    before { allow(WebPushSender).to receive(:deliver) }
+
+    it "delivers a host push when a guest places an order" do
       PushSubscription.register(subscriber: user, endpoint: "https://push/host", p256dh: "p", auth: "a")
-      expect do
-        execute_query(create_q, variables: { "t" => session.share_token, "a" => { "guestName" => "Sam" } }, context: {})
-      end.to have_enqueued_job(SendWebPushJob)
+      execute_query(create_q, variables: { "t" => session.share_token, "a" => { "guestName" => "Sam" } }, context: {})
+      expect(WebPushSender).to have_received(:deliver).with(having_attributes(endpoint: "https://push/host"), anything)
     end
 
-    it "enqueues a guest push when the order is marked ready" do
+    it "delivers a guest push when the order is marked ready" do
       order = create(:order, session:, status: :in_progress)
       PushSubscription.register(subscriber: order, endpoint: "https://push/guest", p256dh: "p", auth: "a")
-      expect do
-        execute_query(complete_q, variables: { "id" => order.id, "f" => photo }, context: auth_context(user))
-      end.to have_enqueued_job(SendWebPushJob)
+      execute_query(complete_q, variables: { "id" => order.id, "f" => photo }, context: auth_context(user))
+      expect(WebPushSender).to have_received(:deliver).with(having_attributes(endpoint: "https://push/guest"), anything)
     end
 
     it "does NOT push the guest on a non-ready status change" do
       order = create(:order, session:, status: :pending)
       PushSubscription.register(subscriber: order, endpoint: "https://push/guest", p256dh: "p", auth: "a")
-      expect do
-        execute_query(status_q, variables: { "id" => order.id, "s" => "IN_PROGRESS" }, context: auth_context(user))
-      end.not_to have_enqueued_job(SendWebPushJob)
+      execute_query(status_q, variables: { "id" => order.id, "s" => "IN_PROGRESS" }, context: auth_context(user))
+      expect(WebPushSender).not_to have_received(:deliver)
     end
   end
 end
