@@ -14,6 +14,7 @@ import type {
   OrderStatusEnum,
 } from '@/graphql/generated/types'
 import { statusPillClass, statusPillLabel } from '@/utils/orderStatus'
+import { downscaleImage } from '@/utils/downscaleImage'
 import { type OrderMemory } from '@/utils/orderMemory'
 import PhotoConfirmModal from '@/components/order/PhotoConfirmModal.vue'
 import OrderBoardRowDetails from '@/components/order/OrderBoardRowDetails.vue'
@@ -75,15 +76,17 @@ function clearPreview() {
   errorMsg.value = ''
 }
 
-function onCapture(event: Event) {
+async function onCapture(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   // Reset so re-selecting the same file (e.g. after Retake) still fires @change.
   input.value = ''
   if (!file) return
+  // Downscale before previewing so what's shown is exactly what gets uploaded.
+  const processed = await downscaleImage(file)
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
-  previewFile.value = file
-  previewUrl.value = URL.createObjectURL(file)
+  previewFile.value = processed
+  previewUrl.value = URL.createObjectURL(processed)
   errorMsg.value = ''
 }
 

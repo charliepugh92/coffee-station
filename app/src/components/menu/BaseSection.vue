@@ -4,6 +4,7 @@ import { useMenuMutations } from '@/composables/useMenuMutations'
 import type { StationDetailFragment } from '@/graphql/generated/types'
 import BaseRow from '@/components/menu/BaseRow.vue'
 import type { BaseEdit } from '@/components/menu/baseForm'
+import { downscaleImage } from '@/utils/downscaleImage'
 
 const props = defineProps<{ station: StationDetailFragment }>()
 const emit = defineEmits<{ changed: [] }>()
@@ -54,7 +55,8 @@ async function removeBase(id: string) {
 async function onImage(baseId: string, event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0]
   if (!file) return
-  await menu.uploadBaseImage({ baseId, file })
+  const processed = await downscaleImage(file)
+  await menu.uploadBaseImage({ baseId, file: processed })
   emit('changed')
 }
 </script>
