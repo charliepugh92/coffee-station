@@ -1,6 +1,6 @@
 # Render Blueprint for Davey's Coffee — https://render.com/docs/blueprint-spec
 #
-# Provisions the whole stack on Render's free tier:
+# Provisions the stack on Render (API on Starter; DB, Redis, SPA on free):
 #   - Postgres database
 #   - Key Value (Redis) for Action Cable pub/sub
 #   - Rails GraphQL API (web service)
@@ -31,7 +31,10 @@ services:
   - type: web
     name: coffee-station-api
     runtime: ruby
-    plan: free
+    # Starter ($7/mo): 512MB RAM / 0.5 CPU, no spin-down. Keep this in sync with
+    # the dashboard — a blueprint sync resets the service to whatever is set here,
+    # so leaving it `free` silently downgrades the live API on every push.
+    plan: starter
     region: oregon
     rootDir: api
     buildCommand: "./bin/render-build.sh"
@@ -46,7 +49,7 @@ services:
         sync: false # REQUIRED: paste the contents of api/config/credentials/production.key (decrypts frontend_url / api_host / api_protocol — see DEPLOY.md)
       - key: SECRET_KEY_BASE
         generateValue: true # generated once and kept stable, so issued JWTs stay valid
-      # 0 = Puma single mode (one process) — the leanest option on the 512MB free
+      # 0 = Puma single mode (one process) — the leanest option on the 512MB Starter
       # tier. Clustered mode with a single worker would add an idle master process
       # for no copy-on-write benefit; only set this to 2+ (and rely on puma.rb's
       # preload_app!) once one process genuinely can't keep up.
