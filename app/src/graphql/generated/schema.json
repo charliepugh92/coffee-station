@@ -569,15 +569,11 @@
           },
           {
             "name": "file",
-            "description": "Photo of the finished drink",
+            "description": "Optional photo of the finished drink",
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": "Upload",
-                "kind": "SCALAR",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "Upload",
+              "ofType": null
             },
             "defaultValue": null,
             "isDeprecated": false,

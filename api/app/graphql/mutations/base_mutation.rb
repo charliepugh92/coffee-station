@@ -71,11 +71,19 @@ module Mutations
     end
 
     def trigger_order_updated(order)
-      ApiSchema.subscriptions.trigger(:order_updated, { order_token: order.guest_token }, order)
+      broadcast_order_updated(order)
       # Only the genuine "ready" hand-off pushes the guest. trigger_order_updated
       # also fires for other status changes and from trigger_queue_refresh, which
       # would otherwise spam every queued guest on each status bump.
       push_guest_order_ready(order) if order.ready?
+    end
+
+    # Broadcast the order's current state to its guest subscription over
+    # ActionCable WITHOUT sending a Web Push. Used for follow-up updates (e.g. the
+    # completion photo landing after the ready push has already fired) so the live
+    # page refreshes without double-notifying the guest.
+    def broadcast_order_updated(order)
+      ApiSchema.subscriptions.trigger(:order_updated, { order_token: order.guest_token }, order)
     end
 
     def trigger_session_updated(session)
@@ -98,10 +106,7 @@ module Mutations
         url: "/stations/#{station.id}/board",
         tag: "order-#{order.id}"
       }
-      # Delivered inline rather than via a background job: WebPushSender already
-      # swallows per-endpoint failures, so one dead device can't block the
-      # others, and inline delivery can't be dropped by a queue restart.
-      station.user.push_subscriptions.find_each { |sub| WebPushSender.deliver(sub, payload) }
+      deliver_push(station.user.push_devices, payload, context: "host new order #{order.id}")
     end
 
     def push_guest_order_ready(order)
@@ -111,7 +116,18 @@ module Mutations
         url: "/o/#{order.guest_token}",
         tag: "order-#{order.id}-ready"
       }
-      order.push_subscriptions.find_each { |sub| WebPushSender.deliver(sub, payload) }
+      deliver_push(order.push_devices, payload, context: "order #{order.id} ready")
+    end
+
+    # Send a payload to every device, one per endpoint. Per-endpoint failures are
+    # swallowed inside WebPushSender so one dead device can't block the rest or
+    # raise out of the request. We log the device count so production can confirm
+    # whether a "missing notification" was a no-op send (zero devices) vs a
+    # delivery failure.
+    def deliver_push(devices, payload, context:)
+      devices = devices.distinct
+      Rails.logger.info("[push] #{context}: notifying #{devices.count} device(s)")
+      devices.find_each { |device| WebPushSender.deliver(device, payload) }
     end
 
     def order_summary(order)

@@ -11,7 +11,9 @@ module Mutations
       field :success, Boolean, null: false, description: "Whether the operation succeeded"
 
       def resolve(endpoint:)
-        PushSubscription.where(endpoint:).destroy_all
+        # The browser unsubscribed this endpoint, so drop the whole device — the
+        # FK cascade removes its links to every subscriber it was tracking.
+        PushDevice.where(endpoint:).destroy_all
         { success: true, errors: [] }
       end
     end

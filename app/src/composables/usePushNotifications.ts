@@ -28,9 +28,12 @@ async function getRegistration(): Promise<ServiceWorkerRegistration> {
 }
 
 async function fetchVapidKey(): Promise<string | null> {
+  // network-first: a cache-first read can pin a stale key (e.g. from a different
+  // environment/build), which 401s every subsequent send. The key is fetched
+  // only at subscribe time, so the extra round-trip is cheap.
   const { data } = await apolloClient.query<VapidPublicKeyQuery>({
     query: VapidPublicKeyDocument,
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'network-only',
   })
   return data.vapidPublicKey ?? null
 }
@@ -114,5 +117,13 @@ export function usePushNotifications() {
     store.setSubscribed(false)
   }
 
-  return { supported: computed(() => store.supported), permission: computed(() => store.permission), canPrompt, needsInstall, subscribe, unsubscribe }
+  return {
+    supported: computed(() => store.supported),
+    permission: computed(() => store.permission),
+    subscribed: computed(() => store.subscribed),
+    canPrompt,
+    needsInstall,
+    subscribe,
+    unsubscribe,
+  }
 }

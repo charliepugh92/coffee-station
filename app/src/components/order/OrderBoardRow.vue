@@ -108,6 +108,25 @@ async function confirmComplete() {
   }
 }
 
+// Mark ready without a photo — same mutation, file omitted. Useful when there's
+// no time to snap a photo, and it sidesteps the upload path entirely.
+async function completeWithoutPhoto() {
+  if (submitting.value) return
+  submitting.value = true
+  errorMsg.value = ''
+  try {
+    await apolloClient.mutate<CompleteOrderMutation, CompleteOrderMutationVariables>({
+      mutation: CompleteOrderDocument,
+      variables: { orderId: props.order.id, file: null },
+    })
+    emit('changed')
+  } catch {
+    errorMsg.value = "Couldn't mark ready. Check your connection and try again."
+  } finally {
+    submitting.value = false
+  }
+}
+
 function retake() {
   clearPreview()
   fileInput.value?.click()
@@ -129,24 +148,52 @@ function cancelPreview() {
       >
         {{ statusPillLabel(order.status) }}
       </span>
-      <label
-        v-if="order.status === 'IN_PROGRESS'"
-        class="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-ink px-3 py-1.5 text-sm font-semibold text-surface hover:bg-ink/90"
-      >
-        Mark ready
-        <i
-          class="ti ti-camera text-base"
-          aria-hidden="true"
-        />
-        <input
-          ref="fileInput"
-          type="file"
-          accept="image/*"
-          capture="environment"
-          class="hidden"
-          @change="onCapture"
+      <template v-if="order.status === 'IN_PROGRESS'">
+        <div class="flex items-center gap-1.5">
+          <!-- A <button> (not a <label>) so it's keyboard-focusable; it opens the
+               hidden file input programmatically. -->
+          <button
+            type="button"
+            :disabled="submitting"
+            class="inline-flex items-center gap-1.5 rounded-md bg-ink px-3 py-1.5 text-sm font-semibold text-surface hover:bg-ink/90 disabled:opacity-45"
+            @click="fileInput?.click()"
+          >
+            Mark ready
+            <i
+              class="ti ti-camera text-base"
+              aria-hidden="true"
+            />
+          </button>
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            capture="environment"
+            class="hidden"
+            @change="onCapture"
+          >
+          <button
+            type="button"
+            :disabled="submitting"
+            aria-label="Mark ready without a photo"
+            title="Mark ready without a photo"
+            class="inline-flex items-center justify-center rounded-md border-[0.5px] border-border p-1.5 text-muted hover:border-ink/30 hover:text-ink disabled:opacity-45"
+            @click="completeWithoutPhoto"
+          >
+            <i
+              :class="submitting ? 'ti ti-loader-2 animate-spin' : 'ti ti-check'"
+              class="text-base"
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+        <p
+          v-if="errorMsg && !previewFile"
+          class="max-w-[12rem] text-right text-xs text-error"
         >
-      </label>
+          {{ errorMsg }}
+        </p>
+      </template>
       <button
         v-else-if="NEXT[order.status]"
         class="rounded-md bg-roast px-3 py-1.5 text-sm font-semibold text-surface hover:bg-roast/90 active:scale-[.99]"

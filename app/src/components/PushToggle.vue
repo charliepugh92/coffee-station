@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { usePushNotifications } from '@/composables/usePushNotifications'
 
 const props = withDefaults(
@@ -11,7 +11,7 @@ const props = withDefaults(
   { label: 'Enable notifications' },
 )
 
-const { supported, permission, needsInstall, subscribe } = usePushNotifications()
+const { supported, permission, subscribed, needsInstall, subscribe } = usePushNotifications()
 const busy = ref(false)
 
 async function onEnable() {
@@ -22,6 +22,16 @@ async function onEnable() {
     busy.value = false
   }
 }
+
+// If this browser already granted permission, (re)link THIS target on mount.
+// Without it a returning user — whose permission is already 'granted' — only ever
+// sees the static "Notifications on" text and never registers the new order/host,
+// so their completed order has no push subscription and no notification fires.
+// subscribe() reuses the existing browser endpoint, so this is idempotent; the
+// !subscribed guard stops it re-running (2 network calls) on every SPA re-mount.
+onMounted(() => {
+  if (permission.value === 'granted' && !subscribed.value) void onEnable()
+})
 </script>
 
 <template>

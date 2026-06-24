@@ -22,6 +22,14 @@ Rails.application.configure do
   # redeploys and instance spin-down (see config/storage.yml for the service).
   config.active_storage.service = :cloudflare
 
+  # Skip image analysis on upload. Nothing in the app reads image metadata or
+  # renders variants, but attach() otherwise enqueues an analyze job that
+  # re-downloads the full image back from R2 and decodes it with libvips inside
+  # the web worker — a memory spike on the 512MB tier that client-side
+  # downscaling can't prevent (it's a server-side re-download). Empty analyzers
+  # means the analyze step finds no analyzer and skips the download entirely.
+  config.active_storage.analyzers = []
+
   # Render terminates SSL at its proxy, so trust X-Forwarded-Proto.
   config.assume_ssl = true
 

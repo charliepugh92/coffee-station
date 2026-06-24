@@ -28,6 +28,16 @@
 threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
 
+# Worker processes. Default 0 = single mode (one process), the leanest option on
+# the 512MB tier — clustered mode with one worker would add an idle master process
+# for no copy-on-write benefit. Set WEB_CONCURRENCY>=2 to run a real cluster, where
+# preload_app! lets the forked workers share the Rails image copy-on-write. (Rails
+# 8.1 discards inherited DB connections after fork and reconnects lazily, so no
+# explicit on_worker_boot reconnect is needed.)
+workers_count = ENV.fetch("WEB_CONCURRENCY", 0).to_i
+workers workers_count
+preload_app! if workers_count.positive?
+
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 port ENV.fetch("PORT", 3000)
 

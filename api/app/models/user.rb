@@ -10,6 +10,7 @@ class User < ApplicationRecord
 
   has_many :stations, dependent: :destroy
   has_many :push_subscriptions, as: :subscriber, dependent: :destroy
+  has_many :push_devices, through: :push_subscriptions
   has_many :user_sessions, dependent: :destroy
 
   validates :display_name, presence: true, length: { maximum: 50 }

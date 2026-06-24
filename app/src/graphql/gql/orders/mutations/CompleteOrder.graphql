@@ -1,6 +1,6 @@
 #import "../../fragments/OrderFields.graphql"
 
-mutation CompleteOrder($orderId: ID!, $file: Upload!) {
+mutation CompleteOrder($orderId: ID!, $file: Upload) {
   completeOrder(input: { orderId: $orderId, file: $file }) {
     order {
       ...OrderFields

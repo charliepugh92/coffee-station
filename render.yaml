@@ -46,8 +46,28 @@ services:
         sync: false # REQUIRED: paste the contents of api/config/credentials/production.key (decrypts frontend_url / api_host / api_protocol — see DEPLOY.md)
       - key: SECRET_KEY_BASE
         generateValue: true # generated once and kept stable, so issued JWTs stay valid
+      # 0 = Puma single mode (one process) — the leanest option on the 512MB free
+      # tier. Clustered mode with a single worker would add an idle master process
+      # for no copy-on-write benefit; only set this to 2+ (and rely on puma.rb's
+      # preload_app!) once one process genuinely can't keep up.
       - key: WEB_CONCURRENCY
+        value: "0"
+      # Cap glibc's per-thread malloc arenas to curb the RSS fragmentation that
+      # ratchets up under repeated image work. Cheap, safe win — but a NO-OP once
+      # jemalloc is enabled (jemalloc ignores it), so it only helps while the
+      # jemalloc lever below is still off.
+      - key: MALLOC_ARENA_MAX
         value: "2"
+      # BIGGEST memory lever (≈30–50% RSS) — enable jemalloc. NOT active yet: the
+      # api/Dockerfile installs it and sets LD_PRELOAD, but `runtime: ruby` above
+      # bypasses the Dockerfile. Enabling it is a deploy decision to make + verify
+      # on Render, so it's left off here. Two options:
+      #   (a) runtime: docker — also override the start command back to
+      #       `bundle exec puma -C config/puma.rb` and reconcile the port, since the
+      #       Dockerfile's CMD starts Thruster on :80, not puma on $PORT; or
+      #   (b) keep runtime: ruby and add an LD_PRELOAD env var pointing at the
+      #       native image's libjemalloc.so (confirm the absolute path first).
+      # Verify on a live instance with: grep jemalloc /proc/self/maps
       - key: DATABASE_URL
         fromDatabase:
           name: coffee-station-db

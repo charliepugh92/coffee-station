@@ -154,7 +154,7 @@ export type UpsertPresetMutation = { upsertPreset: { errors: Array<string>, pres
 
 export type CompleteOrderMutationVariables = Exact<{
   orderId: string | number;
-  file: File;
+  file?: File | null | undefined;
 }>;
 
 

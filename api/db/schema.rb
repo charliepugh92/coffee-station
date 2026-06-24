@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_22_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -134,15 +134,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_150000) do
     t.index ["session_id"], name: "index_orders_on_session_id"
   end
 
-  create_table "push_subscriptions", force: :cascade do |t|
+  create_table "push_devices", force: :cascade do |t|
     t.string "auth_key", null: false
     t.datetime "created_at", null: false
     t.string "endpoint", null: false
     t.string "p256dh_key", null: false
+    t.datetime "updated_at", null: false
+    t.index ["endpoint"], name: "index_push_devices_on_endpoint", unique: true
+  end
+
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.string "auth_key"
+    t.datetime "created_at", null: false
+    t.string "endpoint"
+    t.string "p256dh_key"
+    t.bigint "push_device_id"
     t.bigint "subscriber_id", null: false
     t.string "subscriber_type", null: false
     t.datetime "updated_at", null: false
     t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
+    t.index ["push_device_id", "subscriber_type", "subscriber_id"], name: "index_push_subscriptions_on_device_and_subscriber", unique: true
+    t.index ["push_device_id"], name: "index_push_subscriptions_on_push_device_id"
     t.index ["subscriber_type", "subscriber_id"], name: "index_push_subscriptions_on_subscriber"
   end
 
@@ -218,6 +230,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_22_150000) do
   add_foreign_key "orders", "bases", column: "base_id", on_delete: :nullify
   add_foreign_key "orders", "menu_presets", on_delete: :nullify
   add_foreign_key "orders", "sessions"
+  add_foreign_key "push_subscriptions", "push_devices", on_delete: :cascade
   add_foreign_key "ratings", "orders"
   add_foreign_key "sessions", "stations"
   add_foreign_key "stations", "users"

@@ -17,7 +17,7 @@ RSpec.describe "Push", type: :graphql do
 
     it "registers a device for the authenticated host", :aggregate_failures do
       expect(gql_data(register(auth_context(user)), "registerHostPushSubscription", "success")).to be(true)
-      expect(user.push_subscriptions.pluck(:endpoint)).to eq([ "https://push/host" ])
+      expect(user.push_devices.pluck(:endpoint)).to eq([ "https://push/host" ])
     end
 
     it "requires authentication" do
@@ -38,7 +38,7 @@ RSpec.describe "Push", type: :graphql do
 
     it "registers a device against the matching order", :aggregate_failures do
       expect(gql_data(register(order.guest_token), "registerGuestPushSubscription", "success")).to be(true)
-      expect(order.push_subscriptions.pluck(:endpoint)).to eq([ "https://push/guest" ])
+      expect(order.push_devices.pluck(:endpoint)).to eq([ "https://push/guest" ])
     end
 
     it "rejects an unknown order token" do
@@ -49,10 +49,11 @@ RSpec.describe "Push", type: :graphql do
   describe "unregisterPushSubscription" do
     let(:q) { "mutation($e: String!) { unregisterPushSubscription(input: { endpoint: $e }) { success } }" }
 
-    it "deletes the subscription by endpoint" do
+    it "deletes the device (and its subscriptions) by endpoint", :aggregate_failures do
       PushSubscription.register(subscriber: user, endpoint: "https://push/gone", p256dh: "p", auth: "a")
       execute_query(q, variables: { "e" => "https://push/gone" }, context: {})
-      expect(PushSubscription.exists?(endpoint: "https://push/gone")).to be(false)
+      expect(PushDevice.exists?(endpoint: "https://push/gone")).to be(false)
+      expect(PushSubscription.count).to eq(0)
     end
   end
 

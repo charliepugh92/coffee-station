@@ -109,8 +109,8 @@ export type Comment = {
 export type CompleteOrderInput = {
   /** A unique identifier for the client performing the mutation. */
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** Photo of the finished drink */
-  file: Scalars['Upload']['input'];
+  /** Optional photo of the finished drink */
+  file?: InputMaybe<Scalars['Upload']['input']>;
   /** Order to complete */
   orderId: Scalars['ID']['input'];
 };
